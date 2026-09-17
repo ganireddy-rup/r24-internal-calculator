@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<meta name="description" content="Continuous Internal Evaluation marks calculator for Bapatla Engineering College. Work out your CIE total, or find the marks you still need." />
+<meta name="theme-color" content="#060810" />
+<title>CIE Marks Calculator — Bapatla Engineering College</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" />
+
+<style>
+/* ==========================================================================
+   CIE Marks Calculator — Bapatla Engineering College
+   --------------------------------------------------------------------------
+   1.  Design tokens
+   2.  Reset and base
+   3.  Accessibility helpers
+   4.  Background layers
+   5.  Page shell and hero
+   6.  Mode tabs
+   7.  Form blocks and inputs
+   8.  Bars and attendance tiers
+   9.  Buttons and alerts
+   10. Calculator results
+   11. Predictor results
+   12. Formula strip and footer
+   13. Responsive
+   14. Reduced motion and print
+   All animations use transform/opacity only, so nothing here triggers layout.
+   ========================================================================== */
+
+/* ── 1. Design tokens ─────────────────────────────────────────────────── */
+:root {
+  /* surfaces */
+  --bg:        #060810;
+  --surface-1: #0d1117;
+  --surface-2: #111827;
+  --surface-3: #131d2e;
+  --border:    #1e293b;
+  --track:     #1b2536;
+
+  /* accents */
+  --blue:   #3b82f6;
+  --cyan:   #06b6d4;
+  --gold:   #f59e0b;
+  --green:  #10b981;
+  --red:    #ef4444;
+  --purple: #a855f7;
+
+  /* accent tints, kept as vars so blocks can share one rule set */
+  --blue-soft:   rgba(59, 130, 246, 0.15);
+  --cyan-soft:   rgba(6, 182, 212, 0.15);
+  --gold-soft:   rgba(245, 158, 11, 0.15);
+  --green-soft:  rgba(16, 185, 129, 0.15);
+  --purple-soft: rgba(168, 85, 247, 0.15);
+
+  /* text — dim tones lifted from the original #64748b for contrast */
+  --text:       #f1f5f9;
+  --text-dim:   #cbd5e1;   /* 11:1 on --bg */
+  --text-muted: #94a3b8;   /* 7.3:1 on --bg, used for all real copy */
+  --text-faint: #64748b;   /* decorative only, never load-bearing */
+
+  /* type */
+  --ff-body:    'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ff-display: 'Bebas Neue', 'Outfit', system-ui, sans-serif;
+
+  /* rhythm */
+  --r-sm: 10px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --gap:  clamp(18px, 3vw, 32px);
+  --pad:  clamp(18px, 3vw, 28px);
+
+  /* motion */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 0.18s;
+  --t-med:  0.3s;
+  --t-bar:  0.9s;
+}
+
+/* ── 2. Reset and base ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 16px;
+  line-height: 1.55;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5 { font-weight: 700; line-height: 1.2; }
+button { font: inherit; color: inherit; }
+input { font: inherit; }
+ul { list-style: none; }
+table { border-collapse: collapse; width: 100%; }
+fieldset { border: 0; }
+
+/* ── 3. Accessibility helpers ─────────────────────────────────────────── */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed; top: 8px; left: 8px; z-index: 50;
+  transform: translateY(-160%);
+  padding: 12px 20px; border-radius: var(--r-sm);
+  background: var(--blue); color: #fff; font-weight: 600; text-decoration: none;
+  transition: transform var(--t-fast) ease;
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* one focus treatment for every interactive element */
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.panel:focus-visible { outline-offset: -2px; }
+
+/* ── 4. Background layers ─────────────────────────────────────────────── */
+.bg {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+  contain: strict;          /* isolates these layers from page layout */
+}
+
+.bg__wash {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(59, 130, 246, 0.07), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(6, 182, 212, 0.06), transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(245, 158, 11, 0.03), transparent 50%),
+    var(--bg);
+}
+
+.bg__grid {
+  position: absolute; inset: -60px 0 0;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: grid-drift 20s linear infinite;
+  will-change: transform;
+}
+@keyframes grid-drift { to { transform: translate3d(0, 60px, 0); } }
+
+.bg__orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(70px);
+  animation: orb-float 9s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.bg__orb--1 { width: 460px; height: 460px; top: -150px; left: -150px; background: rgba(59, 130, 246, 0.12); }
+.bg__orb--2 { width: 380px; height: 380px; bottom: -110px; right: -110px; background: rgba(6, 182, 212, 0.10); animation-delay: -3s; }
+.bg__orb--3 { width: 280px; height: 280px; top: 42%; left: 58%; background: rgba(245, 158, 11, 0.06); animation-delay: -6s; }
+@keyframes orb-float {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to   { transform: translate3d(20px, 20px, 0) scale(1.14); }
+}
+
+/* ── 5. Page shell and hero ───────────────────────────────────────────── */
+.page {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column;
+  min-height: 100vh; min-height: 100dvh;
+  padding-inline: max(16px, env(safe-area-inset-left));
+}
+
+.hero { padding: clamp(44px, 8vw, 80px) 0 clamp(28px, 5vw, 52px); text-align: center; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 18px; border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 100px;
+  background: rgba(59, 130, 246, 0.08);
+  color: #93c5fd; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--blue); box-shadow: 0 0 8px var(--blue);
+  animation: badge-pulse 2.4s ease-in-out infinite;
+}
+@keyframes badge-pulse { 50% { opacity: 0.35; } }
+
+.hero__title {
+  margin-top: clamp(18px, 3vw, 28px);
+  font-family: var(--ff-display);
+  font-size: clamp(3.1rem, 11vw, 7rem);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #fff 30%, rgba(59, 130, 246, 0.85));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero__title-accent { background: linear-gradient(135deg, var(--gold), #fb923c); -webkit-background-clip: text; background-clip: text; }
+
+.hero__sub { margin-top: 14px; color: var(--text-muted); font-size: 0.95rem; }
+.hero__rule {
+  width: 80px; height: 2px; margin: 22px auto 0;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+}
+
+/* one orchestrated page-load sequence, nothing else auto-animates */
+.hero > * { animation: rise 0.6s var(--ease) both; }
+.hero > :nth-child(2) { animation-delay: 0.06s; }
+.hero > :nth-child(3) { animation-delay: 0.12s; }
+.hero > :nth-child(4) { animation-delay: 0.18s; }
+.tabs { animation: rise 0.6s 0.22s var(--ease) both; }
+@keyframes rise { from { opacity: 0; transform: translate3d(0, -14px, 0); } }
+
+.main { flex: 1; width: 100%; max-width: 1400px; margin-inline: auto; }
+
+/* ── 6. Mode tabs ─────────────────────────────────────────────────────── */
+.tabs { display: flex; justify-content: center; }
+
+.tab {
+  display: inline-flex; align-items: center; gap: 8px;
+  min-height: 48px; padding: 12px clamp(16px, 4vw, 34px);
+  border: 1px solid var(--border); background: var(--surface-1);
+  color: var(--text-muted); font-size: 0.86rem; font-weight: 600; letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background var(--t-fast) ease, color var(--t-fast) ease, border-color var(--t-fast) ease;
+}
+.tab:first-child { border-radius: var(--r-md) 0 0 var(--r-md); }
+.tab:last-child  { border-radius: 0 var(--r-md) var(--r-md) 0; border-left: 0; }
+.tab:hover { color: var(--text); background: var(--surface-2); }
+.tab.is-active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(6, 182, 212, 0.16));
+  border-color: rgba(59, 130, 246, 0.55);
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 0 var(--cyan);
+}
+.tab__icon { font-size: 1rem; }
+
+/* ── Split layout: inputs left, results right ─────────────────────────── */
+.panel[hidden] { display: none; }
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+  padding: var(--gap) 0 clamp(48px, 8vw, 80px);
+}
+
+.inputs {
+  display: flex; flex-direction: column; gap: var(--gap);
+  padding: var(--gap) var(--gap) var(--gap) 0;
+  border-right: 1px solid var(--border);
+}
+.results {
+  display: flex; flex-direction: column; gap: clamp(14px, 2vw, 22px);
+  padding: var(--gap) 0 var(--gap) var(--gap);
+}
+
+/* ── 7. Form blocks and inputs ────────────────────────────────────────── */
+.block {
+  position: relative; overflow: hidden;
+  padding: var(--pad);
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--surface-1);
+  transition: border-color var(--t-med) ease;
+}
+.block::before {
+  content: ''; position: absolute; inset: 0 0 auto; height: 2px;
+  opacity: 0; transition: opacity var(--t-med) ease;
+  background: linear-gradient(90deg, transparent, var(--block-accent, var(--blue)), transparent);
+}
+.block:focus-within { border-color: color-mix(in srgb, var(--block-accent, var(--blue)) 45%, transparent); }
+.block:focus-within::before { opacity: 1; }
+
+.block--blue   { --block-accent: var(--blue); }
+.block--cyan   { --block-accent: var(--cyan); }
+.block--gold   { --block-accent: var(--gold); }
+.block--purple { --block-accent: var(--purple); border-color: rgba(168, 85, 247, 0.3); }
+
+.block__head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+.block__icon {
+  flex: 0 0 auto; display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: var(--r-md);
+  font-size: 1.25rem;
+}
+.block__icon--blue   { background: var(--blue-soft);   border: 1px solid rgba(59, 130, 246, 0.3); }
+.block__icon--cyan   { background: var(--cyan-soft);   border: 1px solid rgba(6, 182, 212, 0.3); }
+.block__icon--gold   { background: var(--gold-soft);   border: 1px solid rgba(245, 158, 11, 0.3); }
+.block__icon--purple { background: var(--purple-soft); border: 1px solid rgba(168, 85, 247, 0.3); }
+
+.block__title { font-size: 1.05rem; }
+.block__desc { margin-top: 3px; color: var(--text-muted); font-size: 0.8rem; max-width: 46ch; }
+
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field label { color: var(--text-dim); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; }
+.field__note { color: #67e8f9; font-size: 0.72rem; }
+
+.input-wrap { position: relative; display: block; }
+
+input[type='number'] {
+  width: 100%;
+  padding: 14px 92px 14px 16px;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: var(--surface-2); color: var(--text);
+  font-size: 1.3rem; font-weight: 600;
+  appearance: textfield; -moz-appearance: textfield;
+  transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease, background var(--t-fast) ease;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button { appearance: none; margin: 0; }
+input[type='number']:focus-visible {
+  border-color: var(--blue); background: var(--surface-3);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+  outline: none;
+}
+input::placeholder { color: var(--text-faint); font-weight: 400; }
+input.is-optional { background: color-mix(in srgb, var(--surface-2) 80%, transparent); }
+input[aria-invalid='true'] { border-color: var(--red); box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+
+.input-suffix {
+  position: absolute; top: 50%; right: 14px;
+  transform: translateY(-50%);
+  color: var(--text-muted); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+/* target chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.chip {
+  min-height: 36px; padding: 6px 14px;
+  border: 1px solid var(--border); border-radius: 100px;
+  background: var(--surface-2); color: var(--text-muted);
+  font-size: 0.78rem; font-weight: 600; cursor: pointer;
+  transition: background var(--t-fast) ease, color var(--t-fast) ease, border-color var(--t-fast) ease;
+}
+.chip:hover { color: var(--text); border-color: rgba(168, 85, 247, 0.4); }
+.chip.is-sel { background: rgba(168, 85, 247, 0.22); border-color: rgba(168, 85, 247, 0.55); color: #e9d5ff; }
+
+/* ── 8. Bars and tiers ────────────────────────────────────────────────── */
+/* Fills scale on a CSS var, so updates repaint without reflow. */
+.bar { position: relative; overflow: hidden; margin-top: 16px; height: 6px; border-radius: 3px; background: var(--track); }
+.bar--total { height: 10px; border-radius: 5px; }
+
+.bar__fill,
+.card__bar-fill {
+  display: block; height: 100%; width: 100%;
+  transform: scaleX(var(--fill, 0));
+  transform-origin: left center;
+  transition: transform var(--t-bar) var(--ease);
+  will-change: transform;
+}
+.bar__fill--blue { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+
+#barTotal {
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.45);
+}
+#barTotal.is-pass { background: linear-gradient(90deg, var(--blue), var(--green)); box-shadow: 0 0 20px rgba(16, 185, 129, 0.45); }
+#barTotal.is-fail { background: linear-gradient(90deg, var(--red), var(--gold)); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+
+.tiers { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tier {
+  padding: 4px 9px; border: 1px solid var(--border); border-radius: 100px;
+  color: var(--text-muted); font-size: 0.66rem; font-weight: 500;
+  transition: background var(--t-med) ease, color var(--t-med) ease, border-color var(--t-med) ease;
+}
+.tier.is-on { color: #fff; }
+.tier--2.is-on { background: rgba(239, 68, 68, 0.28); border-color: rgba(239, 68, 68, 0.5); color: #fecaca; }
+.tier--3.is-on { background: rgba(245, 158, 11, 0.28); border-color: rgba(245, 158, 11, 0.5); color: #fde68a; }
+.tier--4.is-on { background: rgba(59, 130, 246, 0.28); border-color: rgba(59, 130, 246, 0.5); color: #bfdbfe; }
+.tier--5.is-on { background: rgba(16, 185, 129, 0.28); border-color: rgba(16, 185, 129, 0.5); color: #a7f3d0; }
+
+/* ── 9. Buttons and alerts ────────────────────────────────────────────── */
+.btn {
+  position: relative; overflow: hidden;
+  width: 100%; min-height: 56px; padding: 16px 20px;
+  border: 0; border-radius: 14px;
+  color: #fff; font-family: var(--ff-display); font-size: 1.5rem; letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: transform var(--t-fast) ease, box-shadow var(--t-fast) ease;
+}
+.btn--blue   { background: linear-gradient(135deg, var(--blue), var(--cyan));   box-shadow: 0 0 28px rgba(59, 130, 246, 0.3); }
+.btn--purple { background: linear-gradient(135deg, var(--purple), var(--blue)); box-shadow: 0 0 28px rgba(168, 85, 247, 0.3); }
+.btn:hover { transform: translateY(-2px); }
+.btn--blue:hover   { box-shadow: 0 12px 36px rgba(59, 130, 246, 0.45); }
+.btn--purple:hover { box-shadow: 0 12px 36px rgba(168, 85, 247, 0.45); }
+.btn:active { transform: translateY(0); }
+
+.btn__shine {
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: skewX(-20deg);
+  animation: shine 3.4s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes shine {
+  0%       { transform: translate3d(0, 0, 0) skewX(-20deg); }
+  35%, 100% { transform: translate3d(420%, 0, 0) skewX(-20deg); }
+}
+
+.btn-ghost {
+  align-self: flex-start;
+  min-height: 44px; padding: 10px 18px;
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  background: transparent; color: var(--text-muted);
+  font-size: 0.82rem; cursor: pointer;
+  transition: background var(--t-fast) ease, color var(--t-fast) ease, border-color var(--t-fast) ease;
+}
+.btn-ghost:hover { background: var(--surface-2); color: var(--text); border-color: rgba(59, 130, 246, 0.35); }
+
+.alert {
+  padding: 12px 16px;
+  border: 1px solid rgba(239, 68, 68, 0.35); border-radius: var(--r-sm);
+  background: rgba(239, 68, 68, 0.1);
+  color: #fecaca; font-size: 0.84rem;
+}
+.alert[hidden] { display: none; }
+
+/* ── 10. Calculator results ───────────────────────────────────────────── */
+.results__title {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--text-muted); font-family: var(--ff-display); font-weight: 400;
+  font-size: 1rem; letter-spacing: 0.22em; text-transform: uppercase;
+}
+.results__title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.cards { display: flex; flex-direction: column; gap: 14px; }
+
+/* dimmed until a result exists; .is-lit is the single reveal moment */
+[data-card] { opacity: 0.4; transition: opacity var(--t-med) ease, transform var(--t-med) var(--ease); }
+[data-card].is-lit { opacity: 1; }
+
+.card {
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; gap: 18px;
+  padding: 20px 22px;
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--surface-1);
+}
+.card.is-lit { animation: card-pop 0.4s var(--ease) both; }
+.cards .card:nth-child(2).is-lit { animation-delay: 0.08s; }
+.cards .card:nth-child(3).is-lit { animation-delay: 0.16s; }
+@keyframes card-pop { from { opacity: 0; transform: scale(0.97); } }
+
+.card__edge { position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+.card__edge--blue { background: linear-gradient(180deg, var(--blue), transparent); }
+.card__edge--cyan { background: linear-gradient(180deg, var(--cyan), transparent); }
+.card__edge--gold { background: linear-gradient(180deg, var(--gold), transparent); }
+
+.card__icon { flex: 0 0 auto; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 14px; font-size: 1.6rem; }
+.card__icon--blue { background: rgba(59, 130, 246, 0.12); }
+.card__icon--cyan { background: rgba(6, 182, 212, 0.12); }
+.card__icon--gold { background: rgba(245, 158, 11, 0.12); }
+
+.card__body { flex: 1; min-width: 0; }
+.card__label { color: var(--text-muted); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.1em; }
+.card__val { margin-top: 2px; font-family: var(--ff-display); font-size: 2.2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.card__val--blue { color: #60a5fa; }
+.card__val--cyan { color: #22d3ee; }
+.card__val--gold { color: #fbbf24; }
+.card__max { color: var(--text-muted); font-family: var(--ff-body); font-size: 0.8rem; font-weight: 400; }
+
+.card__bar { position: absolute; inset: auto 0 0; height: 3px; background: var(--track); }
+.card__bar-fill--blue { background: var(--blue); }
+.card__bar-fill--cyan { background: var(--cyan); }
+.card__bar-fill--gold { background: var(--gold); }
+
+/* total */
+.total {
+  position: relative; overflow: hidden;
+  padding: clamp(24px, 4vw, 34px);
+  border: 1px solid var(--border); border-radius: var(--r-xl);
+  background: var(--surface-1);
+  opacity: 0.4; transition: opacity var(--t-med) ease;
+}
+.total.is-lit { opacity: 1; animation: card-pop 0.5s var(--ease) both; }
+
+.total__ghost {
+  position: absolute; right: -8px; bottom: -26px;
+  font-family: var(--ff-display); font-size: 10rem; line-height: 1;
+  color: rgba(255, 255, 255, 0.028);
+  user-select: none;
+}
+.total__row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.total__eyebrow { color: var(--text-muted); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; }
+.total__score {
+  font-family: var(--ff-display); font-size: clamp(3.6rem, 9vw, 6rem); line-height: 1;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(135deg, #fff, rgba(59, 130, 246, 0.85));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.total__denom { font-family: var(--ff-body); font-size: 1.3rem; font-weight: 400; color: var(--text-muted); -webkit-text-fill-color: var(--text-muted); }
+.total__right { text-align: right; }
+.total__pct { margin-top: 2px; color: #22d3ee; font-family: var(--ff-display); font-size: 2.5rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.total__bar-wrap { margin-top: 22px; }
+.total__ticks { display: flex; justify-content: space-between; margin-top: 6px; color: var(--text-muted); font-size: 0.66rem; }
+.total__ticks-pass { color: #6ee7b7; }
+
+/* verdict */
+.verdict {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 22px; border-radius: var(--r-lg);
+  animation: verdict-in 0.45s var(--ease) both;
+}
+.verdict[hidden] { display: none; }
+@keyframes verdict-in { from { opacity: 0; transform: translate3d(0, 10px, 0); } }
+.verdict.is-pass { background: rgba(16, 185, 129, 0.09); border: 1px solid rgba(16, 185, 129, 0.3); }
+.verdict.is-fail { background: rgba(239, 68, 68, 0.09); border: 1px solid rgba(239, 68, 68, 0.3); }
+.verdict__emoji { flex: 0 0 auto; font-size: 2rem; }
+.verdict__title { display: block; font-family: var(--ff-display); font-size: 1.7rem; letter-spacing: 0.03em; }
+.verdict.is-pass .verdict__title { color: #34d399; }
+.verdict.is-fail .verdict__title { color: #f87171; }
+.verdict__detail { display: block; margin-top: 2px; color: var(--text-muted); font-size: 0.84rem; }
+
+/* ── 11. Predictor results ────────────────────────────────────────────── */
+.predict-out { display: flex; flex-direction: column; gap: 16px; }
+.predict-out[hidden] { display: none; }
+
+.empty {
+  padding: 22px 24px;
+  border: 1px dashed var(--border); border-radius: var(--r-lg);
+  background: rgba(17, 24, 39, 0.5);
+  color: var(--text-muted); font-size: 0.88rem; max-width: 60ch;
+}
+.empty[hidden] { display: none; }
+
+.summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 18px 22px;
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--surface-1);
+}
+.summary__item { min-width: 0; }
+.summary__label { color: var(--text-muted); font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+.summary__val { margin-top: 2px; color: #22d3ee; font-family: var(--ff-display); font-size: 1.7rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.summary__div { flex: 0 0 1px; width: 1px; height: 38px; background: var(--border); }
+
+.req {
+  padding: var(--pad);
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--surface-1);
+}
+.req__head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
+.req__icon {
+  flex: 0 0 auto; display: grid; place-items: center;
+  width: 44px; height: 44px; border-radius: var(--r-md); font-size: 1.2rem;
+  background: var(--purple-soft); border: 1px solid rgba(168, 85, 247, 0.3);
+}
+.req__title { color: #d8b4fe; font-size: 0.98rem; }
+.req__sub { margin-top: 2px; color: var(--text-muted); font-size: 0.76rem; }
+
+.strategies { display: flex; flex-direction: column; gap: 14px; }
+.strategy {
+  padding: 16px 18px;
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--surface-2);
+}
+.strategy[hidden] { display: none; }
+.strategy__name { margin-bottom: 10px; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.strategy--cyan  .strategy__name { color: #22d3ee; }
+.strategy--gold  .strategy__name { color: #fbbf24; }
+.strategy--green .strategy__name { color: #34d399; }
+
+.req-item {
+  padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: var(--r-md);
+  background: var(--surface-1);
+}
+.req-item__label { color: var(--text-muted); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+.req-item__val { margin-top: 5px; font-family: var(--ff-display); font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.req-item__val--quiet { color: var(--text-dim); font-size: 1.5rem; }
+.req-item__val.is-easy { color: #34d399; }
+.req-item__val.is-tough { color: #fbbf24; }
+.req-item__val.is-hard { color: #f87171; }
+.req-item__unit { color: var(--text-muted); font-family: var(--ff-body); font-size: 0.86rem; font-weight: 400; }
+.req-item__note { margin-top: 5px; color: var(--text-muted); font-size: 0.72rem; }
+
+.pill { display: inline-block; margin-left: 4px; padding: 2px 8px; border-radius: 100px; font-size: 0.66rem; font-weight: 700; }
+.pill.is-easy  { background: rgba(16, 185, 129, 0.22); color: #6ee7b7; }
+.pill.is-tough { background: rgba(245, 158, 11, 0.22); color: #fcd34d; }
+.pill.is-hard  { background: rgba(239, 68, 68, 0.22); color: #fca5a5; }
+
+.unreach {
+  padding: 16px 18px;
+  border: 1px solid rgba(239, 68, 68, 0.28); border-radius: var(--r-md);
+  background: rgba(239, 68, 68, 0.08);
+  color: #fca5a5; font-size: 0.86rem;
+}
+.unreach[hidden] { display: none; }
+.unreach__tip { display: block; margin-top: 6px; color: #fcd34d; }
+
+.scenarios {
+  overflow: hidden;
+  border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--surface-1);
+}
+.scenarios__head { display: flex; align-items: center; gap: 10px; padding: 15px 20px; border-bottom: 1px solid var(--border); }
+.scenarios__title { color: var(--text-dim); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; }
+
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table th, .table td { padding: 12px 20px; text-align: left; font-size: 0.85rem; white-space: nowrap; }
+.table thead th {
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--text-muted); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.table tbody tr { border-top: 1px solid rgba(30, 41, 59, 0.6); }
+.table tbody tr:hover { background: rgba(59, 130, 246, 0.05); }
+.table tbody th { font-weight: 700; }
+.table__total { font-weight: 700; font-variant-numeric: tabular-nums; }
+.table__total.is-target { color: #34d399; }
+.table__total.is-pass { color: #22d3ee; }
+.table__total.is-fail { color: #fbbf24; }
+
+.status { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; }
+.status.is-pass { background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.35); color: #6ee7b7; }
+.status.is-fail { background: rgba(239, 68, 68, 0.16); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+
+.info {
+  padding: 14px 18px;
+  border: 1px solid rgba(59, 130, 246, 0.25); border-radius: var(--r-md);
+  background: rgba(59, 130, 246, 0.07);
+  color: #bfdbfe; font-size: 0.8rem; line-height: 1.7; max-width: 70ch;
+}
+
+/* ── 12. Formula strip and footer ─────────────────────────────────────── */
+.formulas {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+  padding: 26px 0; border-top: 1px solid var(--border);
+}
+.formula {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; border: 1px solid var(--border); border-radius: 100px;
+  background: var(--surface-1);
+  color: var(--text-muted); font-size: 0.75rem;
+}
+.formula__dot { flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%; }
+.formula__dot--blue  { background: var(--blue); }
+.formula__dot--cyan  { background: var(--cyan); }
+.formula__dot--gold  { background: var(--gold); }
+.formula__dot--green { background: var(--green); }
+
+.foot {
+  padding: 18px 0 calc(22px + env(safe-area-inset-bottom));
+  color: var(--text-faint); font-size: 0.72rem; text-align: center;
+}
+
+/* ── 13. Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 1080px) {
+  .card__val { font-size: 2rem; }
+  .req-item__val { font-size: 1.75rem; }
+}
+
+/* single column: inputs stack above results */
+@media (max-width: 900px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .inputs { border-right: 0; border-bottom: 1px solid var(--border); padding: 0 0 var(--gap); }
+  .results { padding: var(--gap) 0 0; }
+  .total__ghost { font-size: 7rem; }
+}
+
+@media (max-width: 620px) {
+  .tabs { flex-direction: column; }
+  .tab { justify-content: center; width: 100%; }
+  .tab:first-child { border-radius: var(--r-md) var(--r-md) 0 0; }
+  .tab:last-child  { border-radius: 0 0 var(--r-md) var(--r-md); border-left: 1px solid var(--border); border-top: 0; }
+
+  .grid-2 { grid-template-columns: minmax(0, 1fr); }
+  input[type='number'] { font-size: 1.15rem; padding-right: 84px; }
+
+  .summary { flex-direction: column; align-items: stretch; gap: 12px; }
+  .summary__div { width: 100%; height: 1px; }
+
+  .total__row { flex-direction: column; }
+  .total__right { text-align: left; }
+
+  .card { gap: 14px; padding: 16px 18px; }
+  .card__icon { width: 42px; height: 42px; font-size: 1.3rem; }
+  .table th, .table td { padding: 10px 14px; font-size: 0.8rem; }
+  .formulas { gap: 8px; padding: 22px 0; }
+  .formula { font-size: 0.7rem; }
+}
+
+@media (max-width: 380px) {
+  .hero { padding-top: 32px; }
+  .block { padding: 16px; }
+  .btn { font-size: 1.3rem; }
+}
+
+/* short landscape phones: trim vertical chrome */
+@media (max-height: 540px) and (orientation: landscape) {
+  .hero { padding: 26px 0 18px; }
+  .hero__title { font-size: clamp(2.4rem, 7vw, 3.4rem); }
+  .bg__orb { display: none; }
+}
+
+/* wide screens: cap the reading measure of the panels */
+@media (min-width: 1500px) {
+  .main { max-width: 1480px; }
+}
+
+/* ── 14. Reduced motion and print ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .bg__grid, .bg__orb, .btn__shine, .badge::before { animation: none !important; }
+}
+
+@media (prefers-contrast: more) {
+  :root { --border: #475569; --text-muted: #cbd5e1; }
+}
+
+@media print {
+  .bg, .tabs, .btn, .btn__shine, .btn-ghost, .formulas { display: none !important; }
+  body { background: #fff; color: #000; }
+  .block, .card, .total, .req, .scenarios, .summary { border-color: #999; background: #fff; color: #000; }
+  [data-card] { opacity: 1 !important; }
+}
+
+</style>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to the calculator</a>
+
+<!-- ══ Decorative background layers. Purely visual, hidden from AT ══ -->
+<div class="bg" aria-hidden="true">
+  <div class="bg__wash"></div>
+  <div class="bg__grid"></div>
+  <div class="bg__orb bg__orb--1"></div>
+  <div class="bg__orb bg__orb--2"></div>
+  <div class="bg__orb bg__orb--3"></div>
+</div>
+
+<div class="page">
+
+  <!-- ══════════════════════════ HERO ══════════════════════════ -->
+  <header class="hero">
+    <p class="badge">Bapatla Engineering College</p>
+    <h1 class="hero__title">CIE <span class="hero__title-accent">Marks</span><br />Calculator</h1>
+    <p class="hero__sub">Continuous Internal Evaluation, worked out to 40 marks.</p>
+    <div class="hero__rule" aria-hidden="true"></div>
+  </header>
+
+  <!-- ══════════════════════════ MODE TABS ══════════════════════════ -->
+  <div class="tabs" role="tablist" aria-label="Calculator mode">
+    <button class="tab is-active" id="tab-calc" role="tab" type="button"
+            aria-selected="true" aria-controls="panel-calc">
+      <span class="tab__icon" aria-hidden="true">📊</span> CALCULATE MY CIE
+    </button>
+    <button class="tab" id="tab-predict" role="tab" type="button"
+            aria-selected="false" aria-controls="panel-predict" tabindex="-1">
+      <span class="tab__icon" aria-hidden="true">🎯</span> HOW MAY MARKS TO GAIN
+    </button>
+  </div>
+
+  <main class="main" id="main">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PANEL 1 — CALCULATE CIE
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="panel" id="panel-calc" role="tabpanel" aria-labelledby="tab-calc" tabindex="0">
+      <div class="split">
+
+        <!-- ── Inputs ── -->
+        <form class="inputs" id="calcForm" novalidate>
+
+          <!-- Term exams -->
+          <fieldset class="block block--blue">
+            <legend class="sr-only">Term examination marks</legend>
+            <div class="block__head">
+              <span class="block__icon block__icon--blue" aria-hidden="true">📋</span>
+              <div>
+                <h2 class="block__title">Term examinations</h2>
+                <p class="block__desc">75% of your better term, 25% of the other, scaled to 20.</p>
+              </div>
+            </div>
+            <div class="grid-2">
+              <p class="field">
+                <label for="t1">Term 1</label>
+                <span class="input-wrap">
+                  <input type="number" id="t1" name="t1" inputmode="decimal" placeholder="0"
+                         min="0" max="30" step="0.5" autocomplete="off" aria-describedby="t1-max" />
+                  <span class="input-suffix" id="t1-max">out of 30</span>
+                </span>
+              </p>
+              <p class="field">
+                <label for="t2">Term 2</label>
+                <span class="input-wrap">
+                  <input type="number" id="t2" name="t2" inputmode="decimal" placeholder="0"
+                         min="0" max="30" step="0.5" autocomplete="off" aria-describedby="t2-max" />
+                  <span class="input-suffix" id="t2-max">out of 30</span>
+                </span>
+              </p>
+            </div>
+          </fieldset>
+
+          <!-- AAT -->
+          <fieldset class="block block--cyan">
+            <legend class="sr-only">AAT test marks</legend>
+            <div class="block__head">
+              <span class="block__icon block__icon--cyan" aria-hidden="true">✏️</span>
+              <div>
+                <h2 class="block__title">AAT tests</h2>
+                <p class="block__desc">Average of both tests, scaled to 15.</p>
+              </div>
+            </div>
+            <div class="grid-2">
+              <p class="field">
+                <label for="a1">AAT 1</label>
+                <span class="input-wrap">
+                  <input type="number" id="a1" name="a1" inputmode="decimal" placeholder="0"
+                         min="0" max="10" step="0.5" autocomplete="off" aria-describedby="a1-max" />
+                  <span class="input-suffix" id="a1-max">out of 10</span>
+                </span>
+              </p>
+              <p class="field">
+                <label for="a2">AAT 2</label>
+                <span class="input-wrap">
+                  <input type="number" id="a2" name="a2" inputmode="decimal" placeholder="0"
+                         min="0" max="10" step="0.5" autocomplete="off" aria-describedby="a2-max" />
+                  <span class="input-suffix" id="a2-max">out of 10</span>
+                </span>
+              </p>
+            </div>
+          </fieldset>
+
+          <!-- Attendance -->
+          <fieldset class="block block--gold">
+            <legend class="sr-only">Attendance</legend>
+            <div class="block__head">
+              <span class="block__icon block__icon--gold" aria-hidden="true">📅</span>
+              <div>
+                <h2 class="block__title">Attendance</h2>
+                <p class="block__desc">Banded by percentage, worth up to 5 marks.</p>
+              </div>
+            </div>
+            <p class="field">
+              <label for="att">Attendance percentage</label>
+              <span class="input-wrap">
+                <input type="number" id="att" name="att" inputmode="decimal" placeholder="0.0"
+                       min="0" max="100" step="0.1" autocomplete="off"
+                       data-att-input data-bar="attBar" data-tiers="calc" aria-describedby="att-tiers" />
+                <span class="input-suffix">%</span>
+              </span>
+            </p>
+            <div class="bar bar--att" id="attBar" role="progressbar"
+                 aria-label="Attendance percentage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="bar__fill bar__fill--blue" data-fill></span>
+            </div>
+            <ul class="tiers" id="att-tiers" data-tiers-group="calc">
+              <li class="tier tier--2" data-tier="2">75% and up, 2 marks</li>
+              <li class="tier tier--3" data-tier="3">80% and up, 3 marks</li>
+              <li class="tier tier--4" data-tier="4">85% and up, 4 marks</li>
+              <li class="tier tier--5" data-tier="5">90% and up, 5 marks</li>
+            </ul>
+          </fieldset>
+
+          <p class="alert" id="calcError" role="alert" hidden>
+            Enter every field: term marks out of 30, AAT marks out of 10, attendance as a percentage.
+          </p>
+
+          <button class="btn btn--blue" type="submit">
+            <span class="btn__shine" aria-hidden="true"></span>
+            Calculate CIE
+          </button>
+        </form>
+
+        <!-- ── Results ── -->
+        <div class="results" id="calcResults">
+          <h2 class="results__title">Results breakdown</h2>
+
+          <div class="cards">
+            <article class="card" data-card>
+              <span class="card__edge card__edge--blue" aria-hidden="true"></span>
+              <span class="card__icon card__icon--blue" aria-hidden="true">📋</span>
+              <div class="card__body">
+                <h3 class="card__label">Term exams</h3>
+                <p class="card__val card__val--blue"><output id="rTerm">—</output><span class="card__max"> / 20</span></p>
+              </div>
+              <span class="card__bar" aria-hidden="true"><span class="card__bar-fill card__bar-fill--blue" id="barTerm" data-fill></span></span>
+            </article>
+
+            <article class="card" data-card>
+              <span class="card__edge card__edge--cyan" aria-hidden="true"></span>
+              <span class="card__icon card__icon--cyan" aria-hidden="true">✏️</span>
+              <div class="card__body">
+                <h3 class="card__label">AAT tests</h3>
+                <p class="card__val card__val--cyan"><output id="rAat">—</output><span class="card__max"> / 15</span></p>
+              </div>
+              <span class="card__bar" aria-hidden="true"><span class="card__bar-fill card__bar-fill--cyan" id="barAat" data-fill></span></span>
+            </article>
+
+            <article class="card" data-card>
+              <span class="card__edge card__edge--gold" aria-hidden="true"></span>
+              <span class="card__icon card__icon--gold" aria-hidden="true">📅</span>
+              <div class="card__body">
+                <h3 class="card__label">Attendance</h3>
+                <p class="card__val card__val--gold"><output id="rAtt">—</output><span class="card__max"> / 5</span></p>
+              </div>
+              <span class="card__bar" aria-hidden="true"><span class="card__bar-fill card__bar-fill--gold" id="barAtt" data-fill></span></span>
+            </article>
+          </div>
+
+          <section class="total" id="totalDisplay" aria-labelledby="total-label">
+            <span class="total__ghost" id="totalGhost" aria-hidden="true">40</span>
+            <div class="total__row">
+              <div>
+                <h3 class="total__eyebrow" id="total-label">Total CIE score</h3>
+                <p class="total__score"><output id="rTotal">—</output><span class="total__denom"> / 40</span></p>
+              </div>
+              <div class="total__right">
+                <h3 class="total__eyebrow">Percentage</h3>
+                <p class="total__pct"><output id="rPct">—</output></p>
+              </div>
+            </div>
+            <div class="total__bar-wrap">
+              <div class="bar bar--total" id="totalBar" role="progressbar"
+                   aria-label="CIE total out of 40" aria-valuemin="0" aria-valuemax="40" aria-valuenow="0">
+                <span class="bar__fill" id="barTotal" data-fill></span>
+              </div>
+              <div class="total__ticks" aria-hidden="true">
+                <span>0</span><span class="total__ticks-pass">20, pass mark</span><span>40</span>
+              </div>
+            </div>
+          </section>
+
+          <p class="verdict" id="verdict" role="status" hidden>
+            <span class="verdict__emoji" id="vEmoji" aria-hidden="true"></span>
+            <span>
+              <span class="verdict__title" id="vTitle"></span>
+              <span class="verdict__detail" id="vDetail"></span>
+            </span>
+          </p>
+
+          <button class="btn-ghost" type="button" id="calcReset">Clear all fields</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PANEL 2 — WHAT DO I STILL NEED?
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="panel" id="panel-predict" role="tabpanel" aria-labelledby="tab-predict" tabindex="0" hidden>
+      <div class="split">
+
+        <!-- ── Inputs ── -->
+        <form class="inputs" id="predictForm" novalidate>
+
+          <fieldset class="block block--blue">
+            <legend class="sr-only">Term marks</legend>
+            <div class="block__head">
+              <span class="block__icon block__icon--blue" aria-hidden="true">📋</span>
+              <div>
+                <h2 class="block__title">Term examinations</h2>
+                <p class="block__desc">Term 1 is written. Leave Term 2 blank and we work out what it needs to be.</p>
+              </div>
+            </div>
+            <div class="grid-2">
+              <p class="field">
+                <label for="pt1">Term 1</label>
+                <span class="input-wrap">
+                  <input type="number" id="pt1" inputmode="decimal" placeholder="0"
+                         min="0" max="30" step="0.5" autocomplete="off" aria-describedby="pt1-max" />
+                  <span class="input-suffix" id="pt1-max">out of 30</span>
+                </span>
+              </p>
+              <p class="field">
+                <label for="pt2">Term 2</label>
+                <span class="input-wrap">
+                  <input type="number" id="pt2" class="is-optional" inputmode="decimal" placeholder="—"
+                         min="0" max="30" step="0.5" autocomplete="off" aria-describedby="pt2-note" />
+                  <span class="input-suffix">out of 30</span>
+                </span>
+                <span class="field__note" id="pt2-note">Blank means "tell me what I need".</span>
+              </p>
+            </div>
+          </fieldset>
+
+          <fieldset class="block block--cyan">
+            <legend class="sr-only">AAT marks</legend>
+            <div class="block__head">
+              <span class="block__icon block__icon--cyan" aria-hidden="true">✏️</span>
+              <div>
+                <h2 class="block__title">AAT tests</h2>
+                <p class="block__desc">AAT 1 is written. Leave AAT 2 blank to see the target.</p>
+              </div>
+            </div>
+            <div class="grid-2">
+              <p class="field">
+                <label for="pa1">AAT 1</label>
+                <span class="input-wrap">
+                  <input type="number" id="pa1" inputmode="decimal" placeholder="0"
+                         min="0" max="10" step="0.5" autocomplete="off" aria-describedby="pa1-max" />
+                  <span class="input-suffix" id="pa1-max">out of 10</span>
+                </span>
+              </p>
+              <p class="field">
+                <label for="pa2">AAT 2</label>
+                <span class="input-wrap">
+                  <input type="number" id="pa2" class="is-optional" inputmode="decimal" placeholder="—"
+                         min="0" max="10" step="0.5" autocomplete="off" aria-describedby="pa2-note" />
+                  <span class="input-suffix">out of 10</span>
+                </span>
+                <span class="field__note" id="pa2-note">Blank means "tell me what I need".</span>
+              </p>
+            </div>
+          </fieldset>
+
+          <fieldset class="block block--gold">
+            <legend class="sr-only">Attendance</legend>
+            <div class="block__head">
+              <span class="block__icon block__icon--gold" aria-hidden="true">📅</span>
+              <div>
+                <h2 class="block__title">Attendance</h2>
+                <p class="block__desc">Where you are now, or where you expect to land.</p>
+              </div>
+            </div>
+            <p class="field">
+              <label for="patt">Attendance percentage</label>
+              <span class="input-wrap">
+                <input type="number" id="patt" inputmode="decimal" placeholder="0.0"
+                       min="0" max="100" step="0.1" autocomplete="off"
+                       data-att-input data-bar="pAttBar" data-tiers="predict" aria-describedby="patt-tiers" />
+                <span class="input-suffix">%</span>
+              </span>
+            </p>
+            <div class="bar bar--att" id="pAttBar" role="progressbar"
+                 aria-label="Attendance percentage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <span class="bar__fill bar__fill--blue" data-fill></span>
+            </div>
+            <ul class="tiers" id="patt-tiers" data-tiers-group="predict">
+              <li class="tier tier--2" data-tier="2">75% and up, 2 marks</li>
+              <li class="tier tier--3" data-tier="3">80% and up, 3 marks</li>
+              <li class="tier tier--4" data-tier="4">85% and up, 4 marks</li>
+              <li class="tier tier--5" data-tier="5">90% and up, 5 marks</li>
+            </ul>
+          </fieldset>
+
+          <fieldset class="block block--purple">
+            <legend class="sr-only">Target score</legend>
+            <div class="block__head">
+              <span class="block__icon block__icon--purple" aria-hidden="true">🎯</span>
+              <div>
+                <h2 class="block__title">Target score</h2>
+                <p class="block__desc">The CIE total you are aiming for.</p>
+              </div>
+            </div>
+            <div class="chips" role="group" aria-label="Common targets">
+              <button class="chip" type="button" data-target="21" aria-pressed="false">Pass, 21</button>
+              <button class="chip" type="button" data-target="25" aria-pressed="false">25</button>
+              <button class="chip" type="button" data-target="28" aria-pressed="false">28</button>
+              <button class="chip is-sel" type="button" data-target="30" aria-pressed="true">30</button>
+              <button class="chip" type="button" data-target="35" aria-pressed="false">35</button>
+              <button class="chip" type="button" data-target="40" aria-pressed="false">Full, 40</button>
+            </div>
+            <p class="field">
+              <label for="ptarget">Or type a target</label>
+              <span class="input-wrap">
+                <input type="number" id="ptarget" value="30" min="1" max="40" step="0.5" inputmode="decimal" autocomplete="off" />
+                <span class="input-suffix">out of 40</span>
+              </span>
+            </p>
+          </fieldset>
+
+          <p class="alert" id="predictError" role="alert" hidden>
+            Enter your Term 1 mark, your AAT 1 mark, and your attendance percentage.
+          </p>
+
+          <button class="btn btn--purple" type="submit">
+            <span class="btn__shine" aria-hidden="true"></span>
+            Show what I need
+          </button>
+        </form>
+
+        <!-- ── Results ── -->
+        <div class="results" id="predictResults">
+          <h2 class="results__title">What you need</h2>
+
+          <p class="empty" id="predictEmpty">
+            Fill in Term 1, AAT 1 and attendance, then pick a target. You will get three routes to it,
+            plus a table of likely outcomes.
+          </p>
+
+          <div class="predict-out" id="predictOut" hidden>
+
+            <!-- Locked-in summary -->
+            <div class="summary" data-card>
+              <div class="summary__item">
+                <h3 class="summary__label">Term 1 base</h3>
+                <p class="summary__val" id="pSumTerm">—</p>
+              </div>
+              <span class="summary__div" aria-hidden="true"></span>
+              <div class="summary__item">
+                <h3 class="summary__label">AAT 1 base</h3>
+                <p class="summary__val" id="pSumAat">—</p>
+              </div>
+              <span class="summary__div" aria-hidden="true"></span>
+              <div class="summary__item">
+                <h3 class="summary__label">Attendance marks</h3>
+                <p class="summary__val" id="pSumAtt">—</p>
+              </div>
+            </div>
+
+            <!-- Requirements -->
+            <section class="req" data-card aria-labelledby="pReqTitle">
+              <div class="req__head">
+                <span class="req__icon" aria-hidden="true">🎯</span>
+                <div>
+                  <h3 class="req__title" id="pReqTitle">—</h3>
+                  <p class="req__sub" id="pReqSub">—</p>
+                </div>
+              </div>
+
+              <div class="strategies">
+                <!-- Route A -->
+                <div class="strategy strategy--cyan" id="pStratA">
+                  <h4 class="strategy__name">Route A, full marks in AAT 2</h4>
+                  <div class="grid-2">
+                    <div class="req-item">
+                      <h5 class="req-item__label">Term 2 needed</h5>
+                      <p class="req-item__val" id="pReqT2A">—<span class="req-item__unit"> / 30</span></p>
+                      <p class="req-item__note">Assumes AAT 2 at 10 out of 10 <span class="pill" id="pReqT2AChip"></span></p>
+                    </div>
+                    <div class="req-item">
+                      <h5 class="req-item__label">That is</h5>
+                      <p class="req-item__val req-item__val--quiet" id="pTermPct">—</p>
+                      <p class="req-item__note">of the Term 2 paper</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Route B -->
+                <div class="strategy strategy--gold" id="pStratB">
+                  <h4 class="strategy__name">Route B, full marks in Term 2</h4>
+                  <div class="grid-2">
+                    <div class="req-item">
+                      <h5 class="req-item__label">AAT 2 needed</h5>
+                      <p class="req-item__val" id="pReqA2B">—<span class="req-item__unit"> / 10</span></p>
+                      <p class="req-item__note">Assumes Term 2 at 30 out of 30 <span class="pill" id="pReqA2BChip"></span></p>
+                    </div>
+                    <div class="req-item">
+                      <h5 class="req-item__label">That is</h5>
+                      <p class="req-item__val req-item__val--quiet" id="pAatPct">—</p>
+                      <p class="req-item__note">of the AAT 2 test</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Route C -->
+                <div class="strategy strategy--green" id="pStratC">
+                  <h4 class="strategy__name">Route C, spread the effort</h4>
+                  <div class="grid-2">
+                    <div class="req-item">
+                      <h5 class="req-item__label">Term 2 needed</h5>
+                      <p class="req-item__val" id="pReqT2C">—<span class="req-item__unit"> / 30</span></p>
+                      <p class="req-item__note"><span class="pill" id="pReqT2CChip"></span></p>
+                    </div>
+                    <div class="req-item">
+                      <h5 class="req-item__label">AAT 2 needed</h5>
+                      <p class="req-item__val" id="pReqA2C">—<span class="req-item__unit"> / 10</span></p>
+                      <p class="req-item__note"><span class="pill" id="pReqA2CChip"></span></p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Out of reach -->
+                <p class="unreach" id="pUnreach" hidden>
+                  <span id="pUnreachMsg"></span>
+                  <span class="unreach__tip" id="pUnreachTip"></span>
+                </p>
+              </div>
+            </section>
+
+            <!-- Scenarios -->
+            <div class="scenarios" data-card>
+              <div class="scenarios__head">
+                <span aria-hidden="true">📊</span>
+                <h3 class="scenarios__title">If Term 2 and AAT 2 go like this</h3>
+              </div>
+              <div class="table-scroll">
+                <table class="table">
+                  <caption class="sr-only">CIE totals for five possible Term 2 and AAT 2 results, using your Term 1 and AAT 1 marks</caption>
+                  <thead>
+                    <tr><th scope="col">Term 2</th><th scope="col">AAT 2</th><th scope="col">Total CIE</th><th scope="col">Outcome</th></tr>
+                  </thead>
+                  <tbody id="scenarioBody">
+                    <tr data-t2="20" data-a2="6"><th scope="row">20 / 30</th><td>6 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                    <tr data-t2="24" data-a2="7"><th scope="row">24 / 30</th><td>7 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                    <tr data-t2="27" data-a2="8"><th scope="row">27 / 30</th><td>8 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                    <tr data-t2="30" data-a2="9"><th scope="row">30 / 30</th><td>9 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                    <tr data-t2="30" data-a2="10"><th scope="row">30 / 30</th><td>10 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <p class="info">
+              Term marks take 75% of your better term plus 25% of the other, scaled to 20.
+              AAT is the average of both tests, scaled to 15. Attendance adds up to 5.
+              That makes 40, and you pass above 20.
+            </p>
+          </div>
+
+          <button class="btn-ghost" type="button" id="predictReset">Clear the predictor</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ══════════════════════════ FORMULAS ══════════════════════════ -->
+  <aside class="formulas" aria-label="How each part is calculated">
+    <p class="formula"><span class="formula__dot formula__dot--blue" aria-hidden="true"></span>Term = (0.75 × better + 0.25 × other) × 20/30</p>
+    <p class="formula"><span class="formula__dot formula__dot--cyan" aria-hidden="true"></span>AAT = average(AAT 1, AAT 2) × 15/10</p>
+    <p class="formula"><span class="formula__dot formula__dot--gold" aria-hidden="true"></span>Attendance: 75, 80, 85, 90% gives 2, 3, 4, 5</p>
+    <p class="formula"><span class="formula__dot formula__dot--green" aria-hidden="true"></span>Total = Term + AAT + Attendance, capped at 40</p>
+  </aside>
+
+  <footer class="foot">
+    <p>CIE Calculator, Bapatla Engineering College. Every figure is worked out in your browser, nothing is sent anywhere.</p>
+  </footer>
+</div>
+
+<script>
+/* ==========================================================================
+   CIE Marks Calculator — Bapatla Engineering College
+   --------------------------------------------------------------------------
+   Structure
+     1. Constants
+     2. Calculation core — pure functions, formulas untouched
+     3. DOM helpers and shared animation loop
+     4. Attendance bars and tiers
+     5. Mode tabs (ARIA tabs with keyboard support)
+     6. Calculator mode
+     7. Predictor mode
+     8. Boot
+
+   Performance notes
+     - Every result node exists in index.html; JS only writes text and CSS
+       vars, so there is no innerHTML re-parsing and no layout thrash.
+     - Bars animate with transform: scaleX(var(--fill)), which repaints
+       without reflowing.
+     - All counters share one requestAnimationFrame loop.
+   ========================================================================== */
+
+(function () {
+  'use strict';
+
+  /* ── 1. Constants ─────────────────────────────────────────────────── */
+  const MAX = {
+    TERM: 30,          // raw marks per term paper
+    AAT: 10,           // raw marks per AAT test
+    TERM_SCALED: 20,   // term contribution to CIE
+    AAT_SCALED: 15,    // AAT contribution to CIE
+    ATT: 5,            // attendance contribution to CIE
+    TOTAL: 40          // CIE total
+  };
+  const PASS_MARK = 20; // a pass is strictly above this
+
+  const SCENARIO_DECIMALS = 1;
+
+  /* ── 2. Calculation core (unchanged formulas) ─────────────────────── */
+
+  /** Attendance percentage to marks, banded. */
+  function attMarksFromPct(att) {
+    if (att >= 90) return 5;
+    if (att >= 85) return 4;
+    if (att >= 80) return 3;
+    if (att >= 75) return 2;
+    return 0;
+  }
+
+  /** Term contribution: 75% of the better paper, 25% of the other, scaled to 20. */
+  function termScore(t1, t2) {
+    const best = Math.max(t1, t2);
+    const other = Math.min(t1, t2);
+    return (0.75 * best + 0.25 * other) * (MAX.TERM_SCALED / MAX.TERM);
+  }
+
+  /** AAT contribution: average of both tests, scaled to 15. */
+  function aatScore(a1, a2) {
+    return ((a1 + a2) / 2) * (MAX.AAT_SCALED / MAX.AAT);
+  }
+
+  /** Term 2 raw mark needed so that termScore(t1, t2) === x. */
+  function solveT2(t1, x) {
+    const y = x * MAX.TERM / MAX.TERM_SCALED;
+    // Case 1: Term 2 is the better paper.
+    const a = (y - 0.25 * t1) / 0.75;
+    if (a >= t1) return Math.ceil(a * 10) / 10;
+    // Case 2: Term 1 stays the better paper.
+    const b = (y - 0.75 * t1) / 0.25;
+    return Math.ceil(b * 10) / 10;
+  }
+
+  /** AAT 2 raw mark needed so that aatScore(a1, a2) === x. */
+  function solveA2(a1, x) {
+    return Math.ceil((x * (MAX.AAT * 2 / MAX.AAT_SCALED) - a1) * 10) / 10;
+  }
+
+  /** Rate a required mark: already met, comfortable, tight, or out of range. */
+  function classify(value, max) {
+    if (value <= 0) return 'easy';
+    if (value > max) return 'hard';
+    if (value / max > 0.85) return 'tough';
+    return 'easy';
+  }
+  const RATING_LABEL = { easy: 'Achievable', tough: 'Challenging', hard: 'Not possible' };
+
+  /* ── 3. DOM helpers and shared animation loop ─────────────────────── */
+  const $ = (id) => document.getElementById(id);
+  const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /** Screen-reader announcements for results that are not role="status". */
+  const live = document.createElement('div');
+  live.className = 'sr-only';
+  live.setAttribute('aria-live', 'polite');
+  document.body.appendChild(live);
+  const announce = (msg) => { live.textContent = msg; };
+
+  /* One rAF loop drives every counter on the page. */
+  const counters = new Set();
+  let rafId = null;
+
+  function tick(now) {
+    counters.forEach((c) => {
+      if (c.start === null) c.start = now;
+      const t = Math.min((now - c.start) / c.duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      c.el.textContent = format(c.to * eased, c.decimals, c.suffix);
+      if (t >= 1) {
+        c.el.textContent = format(c.to, c.decimals, c.suffix);
+        counters.delete(c);
+      }
+    });
+    rafId = counters.size ? requestAnimationFrame(tick) : null;
+  }
+
+  const format = (n, decimals, suffix) => n.toFixed(decimals) + (suffix || '');
+
+  /** Count an element up to a value. Skipped when motion is reduced. */
+  function countTo(el, to, decimals, duration, suffix) {
+    if (!el) return;
+    counters.forEach((c) => { if (c.el === el) counters.delete(c); });
+    if (reduceMotion || !duration) {
+      el.textContent = format(to, decimals, suffix);
+      return;
+    }
+    counters.add({ el: el, to: to, decimals: decimals, duration: duration, suffix: suffix, start: null });
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  /** Set a bar fill as a 0–1 ratio, plus its progressbar value if present. */
+  function setBar(fillEl, ratio, ariaEl, ariaNow) {
+    if (!fillEl) return;
+    fillEl.style.setProperty('--fill', clamp(ratio, 0, 1).toFixed(4));
+    if (ariaEl) ariaEl.setAttribute('aria-valuenow', String(ariaNow));
+  }
+
+  function setText(el, value) { if (el) el.textContent = value; }
+
+  /** Swap one state class out of a known set. */
+  function setState(el, state, all) {
+    if (!el) return;
+    all.forEach((s) => el.classList.remove(s));
+    if (state) el.classList.add(state);
+  }
+
+  /* ── 4. Attendance bars and tiers ─────────────────────────────────── */
+  const TIER_MIN = { 2: 75, 3: 80, 4: 85, 5: 90 };
+
+  /** Light the single band the student currently sits in. */
+  function paintTiers(group, pct) {
+    const list = document.querySelector('[data-tiers-group="' + group + '"]');
+    if (!list) return;
+    const marks = attMarksFromPct(pct);
+    list.querySelectorAll('.tier').forEach((li) => {
+      li.classList.toggle('is-on', Number(li.dataset.tier) === marks);
+    });
+  }
+
+  function bindAttendanceInput(input) {
+    const barWrap = $(input.dataset.bar);
+    const fill = barWrap ? barWrap.querySelector('[data-fill]') : null;
+    const group = input.dataset.tiers;
+
+    input.addEventListener('input', function () {
+      const pct = clamp(parseFloat(this.value) || 0, 0, 100);
+      setBar(fill, pct / 100, barWrap, pct);
+      paintTiers(group, pct);
+    }, { passive: true });
+  }
+
+  /* ── 5. Mode tabs ─────────────────────────────────────────────────── */
+  function initTabs() {
+    const tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+
+    function select(tab, moveFocus) {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        $(t.getAttribute('aria-controls')).hidden = !on;
+      });
+      if (moveFocus) tab.focus();
+    }
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab, false));
+      tab.addEventListener('keydown', (e) => {
+        const keys = { ArrowRight: 1, ArrowLeft: -1 };
+        if (e.key in keys) {
+          e.preventDefault();
+          select(tabs[(i + keys[e.key] + tabs.length) % tabs.length], true);
+        } else if (e.key === 'Home') {
+          e.preventDefault(); select(tabs[0], true);
+        } else if (e.key === 'End') {
+          e.preventDefault(); select(tabs[tabs.length - 1], true);
+        }
+      });
+    });
+  }
+
+  /* ── 6. Calculator mode ───────────────────────────────────────────── */
+  const calc = (function () {
+    const form = $('calcForm');
+    if (!form) return {};
+
+    const fields = { t1: $('t1'), t2: $('t2'), a1: $('a1'), a2: $('a2'), att: $('att') };
+    const error = $('calcError');
+    const cards = document.querySelectorAll('#calcResults .card');
+    const totalBox = $('totalDisplay');
+    const totalBar = $('totalBar');
+    const barTotal = $('barTotal');
+    const verdict = $('verdict');
+
+    /** Read and validate: same bounds as before, plus per-field aria-invalid. */
+    function read() {
+      const v = {
+        t1: parseFloat(fields.t1.value),
+        t2: parseFloat(fields.t2.value),
+        a1: parseFloat(fields.a1.value),
+        a2: parseFloat(fields.a2.value),
+        att: parseFloat(fields.att.value)
+      };
+      const bad = [];
+      const check = (key, max) => {
+        const ok = !isNaN(v[key]) && v[key] >= 0 && v[key] <= max;
+        fields[key].setAttribute('aria-invalid', ok ? 'false' : 'true');
+        if (!ok) bad.push(fields[key]);
+      };
+      check('t1', MAX.TERM); check('t2', MAX.TERM);
+      check('a1', MAX.AAT);  check('a2', MAX.AAT);
+      check('att', 100);
+      return { values: v, invalid: bad };
+    }
+
+    function render(v) {
+      const term = termScore(v.t1, v.t2);
+      const aat = aatScore(v.a1, v.a2);
+      const att = attMarksFromPct(v.att);
+      const total = term + aat + att;
+      const pct = total / MAX.TOTAL * 100;
+      const passed = total > PASS_MARK;
+
+      // reveal — one class toggle, CSS handles the stagger
+      cards.forEach((c) => c.classList.add('is-lit'));
+      totalBox.classList.add('is-lit');
+
+      countTo($('rTerm'), term, 2, 800);
+      countTo($('rAat'), aat, 2, 800);
+      countTo($('rAtt'), att, 0, 400);
+      countTo($('rTotal'), total, 2, 1000);
+      countTo($('rPct'), pct, 1, 1000, '%');
+
+      setBar($('barTerm'), term / MAX.TERM_SCALED);
+      setBar($('barAat'), aat / MAX.AAT_SCALED);
+      setBar($('barAtt'), att / MAX.ATT);
+      setState(barTotal, passed ? 'is-pass' : 'is-fail', ['is-pass', 'is-fail']);
+      setBar(barTotal, total / MAX.TOTAL, totalBar, total.toFixed(2));
+
+      setText($('totalGhost'), String(Math.round(total)));
+
+      verdict.hidden = false;
+      setState(verdict, passed ? 'is-pass' : 'is-fail', ['is-pass', 'is-fail']);
+      setText($('vEmoji'), passed ? '✅' : '❤️‍🩹');
+      setText($('vTitle'), passed ? 'You have passed' : 'Not there yet');
+      setText($('vDetail'), passed
+        ? total.toFixed(2) + ' out of 40, clear of the 20 mark pass line.'
+        : total.toFixed(2) + ' out of 40. You need more than 20 to pass, so put the weight on your finals.');
+    }
+
+    function reset() {
+      Object.keys(fields).forEach((k) => {
+        fields[k].value = '';
+        fields[k].setAttribute('aria-invalid', 'false');
+      });
+      const attFill = $('attBar').querySelector('[data-fill]');
+      setBar(attFill, 0, $('attBar'), 0);
+      paintTiers('calc', 0);
+
+      cards.forEach((c) => c.classList.remove('is-lit'));
+      totalBox.classList.remove('is-lit');
+      verdict.hidden = true;
+
+      ['rTerm', 'rAat', 'rAtt', 'rTotal', 'rPct'].forEach((id) => setText($(id), '—'));
+      setText($('totalGhost'), '40');
+      ['barTerm', 'barAat', 'barAtt'].forEach((id) => setBar($(id), 0));
+      setState(barTotal, null, ['is-pass', 'is-fail']);
+      setBar(barTotal, 0, totalBar, 0);
+      error.hidden = true;
+      fields.t1.focus();
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const r = read();
+      if (r.invalid.length) {
+        error.hidden = false;
+        r.invalid[0].focus();
+        return;
+      }
+      error.hidden = true;
+      render(r.values);
+    });
+
+    $('calcReset').addEventListener('click', reset);
+    return { reset: reset };
+  })();
+
+  /* ── 7. Predictor mode ────────────────────────────────────────────── */
+  const predictor = (function () {
+    const form = $('predictForm');
+    if (!form) return {};
+
+    const fields = { pt1: $('pt1'), pt2: $('pt2'), pa1: $('pa1'), pa2: $('pa2'), patt: $('patt'), ptarget: $('ptarget') };
+    const error = $('predictError');
+    const empty = $('predictEmpty');
+    const out = $('predictOut');
+    const chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+    const rows = Array.prototype.slice.call(document.querySelectorAll('#scenarioBody tr'));
+
+    /* target chips keep the number input in sync, and vice versa */
+    function syncChips(value) {
+      chips.forEach((c) => {
+        const on = Number(c.dataset.target) === value;
+        c.classList.toggle('is-sel', on);
+        c.setAttribute('aria-pressed', String(on));
+      });
+    }
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        fields.ptarget.value = chip.dataset.target;
+        syncChips(Number(chip.dataset.target));
+      });
+    });
+    fields.ptarget.addEventListener('input', function () {
+      syncChips(parseFloat(this.value));
+    }, { passive: true });
+
+    /** Write one "marks needed" tile: value, rating pill, colour. */
+    function paintRequirement(valEl, pillEl, needed, max, unit) {
+      const rating = classify(needed, max);
+      const shown = needed <= 0 ? 'Any' : clamp(needed, 0, max).toFixed(1);
+      valEl.innerHTML = '';
+      valEl.appendChild(document.createTextNode(shown));
+      if (unit) {
+        const u = document.createElement('span');
+        u.className = 'req-item__unit';
+        u.textContent = ' / ' + max;
+        valEl.appendChild(u);
+      }
+      setState(valEl, 'is-' + rating, ['is-easy', 'is-tough', 'is-hard']);
+      if (pillEl) {
+        pillEl.textContent = RATING_LABEL[rating];
+        setState(pillEl, 'is-' + rating, ['is-easy', 'is-tough', 'is-hard']);
+      }
+      return rating;
+    }
+
+    function read() {
+      const v = {
+        t1: parseFloat(fields.pt1.value),
+        a1: parseFloat(fields.pa1.value),
+        att: parseFloat(fields.patt.value),
+        target: parseFloat(fields.ptarget.value) || 30
+      };
+      const bad = [];
+      const check = (el, val, max) => {
+        const ok = !isNaN(val) && val >= 0 && val <= max;
+        el.setAttribute('aria-invalid', ok ? 'false' : 'true');
+        if (!ok) bad.push(el);
+      };
+      check(fields.pt1, v.t1, MAX.TERM);
+      check(fields.pa1, v.a1, MAX.AAT);
+      check(fields.patt, v.att, 100);
+      return { values: v, invalid: bad };
+    }
+
+    function render(v) {
+      const attMarks = attMarksFromPct(v.att);
+      const needed = v.target - attMarks;            // required from term + AAT
+      const termIfMax = termScore(v.t1, MAX.TERM);   // term score with a perfect Term 2
+      const aatIfMax = aatScore(v.a1, MAX.AAT);      // AAT score with a perfect AAT 2
+      const maxRemaining = termIfMax + aatIfMax;
+
+      empty.hidden = true;
+      out.hidden = false;
+
+      /* locked-in base figures */
+      setText($('pSumTerm'), termScore(v.t1, 0).toFixed(2) + ' of 20');
+      setText($('pSumAat'), (v.a1 * 0.75).toFixed(2) + ' of 15');
+      setText($('pSumAtt'), attMarks + ' of 5');
+
+      setText($('pReqTitle'), 'Target ' + v.target + ' of 40, so ' +
+        Math.max(0, needed).toFixed(1) + ' must come from Term 2 and AAT 2');
+      setText($('pReqSub'), 'Attendance is already locked in at ' + attMarks + ' of 5 marks.');
+
+      /* Route A — full marks in AAT 2, solve for Term 2 */
+      const termNeededIfAatMax = needed - aatIfMax;
+      const reqT2A = termNeededIfAatMax <= 0 ? 0 : solveT2(v.t1, termNeededIfAatMax);
+      paintRequirement($('pReqT2A'), $('pReqT2AChip'), reqT2A, MAX.TERM, true);
+      setText($('pTermPct'), reqT2A > 0
+        ? (clamp(reqT2A, 0, MAX.TERM) / MAX.TERM * 100).toFixed(0) + '%'
+        : '—');
+
+      /* Route B — full marks in Term 2, solve for AAT 2 */
+      const aatNeededIfTermMax = needed - termIfMax;
+      const reqA2B = aatNeededIfTermMax <= 0 ? 0 : solveA2(v.a1, aatNeededIfTermMax);
+      paintRequirement($('pReqA2B'), $('pReqA2BChip'), reqA2B, MAX.AAT, true);
+      setText($('pAatPct'), reqA2B > 0
+        ? (clamp(reqA2B, 0, MAX.AAT) / MAX.AAT * 100).toFixed(0) + '%'
+        : '—');
+
+      /* Route C — split the load in proportion to what each paper can still add */
+      const reachable = needed <= maxRemaining;
+      const stratC = $('pStratC');
+      const unreach = $('pUnreach');
+
+      if (reachable) {
+        let reqT2C = 0;
+        let reqA2C = 0;
+        if (needed > 0) {
+          const ratio = needed / maxRemaining;
+          reqT2C = solveT2(v.t1, termIfMax * ratio);
+          reqA2C = solveA2(v.a1, aatIfMax * ratio);
+        }
+        paintRequirement($('pReqT2C'), $('pReqT2CChip'), reqT2C, MAX.TERM, true);
+        paintRequirement($('pReqA2C'), $('pReqA2CChip'), reqA2C, MAX.AAT, true);
+        stratC.hidden = false;
+        unreach.hidden = true;
+      } else {
+        stratC.hidden = true;
+        unreach.hidden = false;
+        setText($('pUnreachMsg'), 'A target of ' + v.target + ' of 40 is out of reach, even with ' +
+          '30 of 30 in Term 2 and 10 of 10 in AAT 2, at your current attendance band.');
+        setText($('pUnreachTip'), attMarks < MAX.ATT
+          ? 'Getting attendance to 90% or above would add ' + (MAX.ATT - attMarks) + ' more mark' +
+            (MAX.ATT - attMarks === 1 ? '' : 's') + '.'
+          : '');
+      }
+
+      /* Scenario table — totals for five plausible outcomes */
+      rows.forEach((row) => {
+        const t2 = Number(row.dataset.t2);
+        const a2 = Number(row.dataset.a2);
+        const total = termScore(v.t1, t2) + aatScore(v.a1, a2) + attMarks;
+        const pass = total > PASS_MARK;
+        const hit = total >= v.target;
+
+        const totalCell = row.querySelector('.table__total');
+        totalCell.textContent = total.toFixed(SCENARIO_DECIMALS) + ' / 40';
+        setState(totalCell, hit ? 'is-target' : pass ? 'is-pass' : 'is-fail',
+          ['is-target', 'is-pass', 'is-fail']);
+
+        const status = row.querySelector('.status');
+        status.textContent = hit ? 'Hits target' : pass ? 'Pass' : 'Fail';
+        setState(status, pass ? 'is-pass' : 'is-fail', ['is-pass', 'is-fail']);
+      });
+
+      announce('Requirements updated for a target of ' + v.target + ' out of 40.');
+    }
+
+    function reset() {
+      ['pt1', 'pt2', 'pa1', 'pa2', 'patt'].forEach((k) => {
+        fields[k].value = '';
+        fields[k].setAttribute('aria-invalid', 'false');
+      });
+      fields.ptarget.value = 30;
+      syncChips(30);
+
+      const bar = $('pAttBar');
+      setBar(bar.querySelector('[data-fill]'), 0, bar, 0);
+      paintTiers('predict', 0);
+
+      out.hidden = true;
+      empty.hidden = false;
+      error.hidden = true;
+      fields.pt1.focus();
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const r = read();
+      if (r.invalid.length) {
+        error.hidden = false;
+        r.invalid[0].focus();
+        return;
+      }
+      error.hidden = true;
+      render(r.values);
+    });
+
+    $('predictReset').addEventListener('click', reset);
+    return { reset: reset };
+  })();
+
+  /* ── 8. Boot ──────────────────────────────────────────────────────── */
+  document.querySelectorAll('[data-att-input]').forEach(bindAttendanceInput);
+  initTabs();
+})();
+
+</script>
+</body>
+</html>
