@@ -1,0 +1,3766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<meta name="description" content="Continuous Internal Evaluation marks calculator, Target Planner and SGPA/CGPA studio for Bapatla Engineering College." />
+<meta name="theme-color" content="#050813" />
+<title>CIE Marks Calculator — Bapatla Engineering College</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" />
+
+<style>
+/* ==========================================================================
+   BAPATLA ENGINEERING COLLEGE — CYBER DEVELOPER SUITE 2026
+   ========================================================================== */
+
+:root {
+  --bg: #040711;
+  --bg-secondary: #070c1c;
+  --panel-bg: #0a1124;
+  --panel-border: #142347;
+  --panel-border-hover: #233b77;
+  --input-bg: #060b18;
+  --input-border: #111d3a;
+
+  /* Neon Accents */
+  --blue: #2563eb;
+  --blue-light: #3b82f6;
+  --blue-glow: rgba(59, 130, 246, 0.45);
+  --cyan: #06b6d4;
+  --cyan-bright: #22d3ee;
+  --cyan-glow: rgba(6, 182, 212, 0.45);
+  --purple: #8b5cf6;
+  --purple-bright: #a855f7;
+  --purple-glow: rgba(168, 85, 247, 0.45);
+  --pink: #ec4899;
+  --pink-bright: #f472b6;
+  --gold: #f59e0b;
+  --gold-glow: rgba(245, 158, 11, 0.4);
+  --green: #10b981;
+  --green-glow: rgba(16, 185, 129, 0.45);
+  --red: #f43f5e;
+  --red-glow: rgba(244, 63, 94, 0.45);
+
+  /* Typography */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #8493ad;
+  --text-faint: #475569;
+
+  --ff-sans: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ff-mono: 'JetBrains Mono', monospace;
+  --ff-hand: 'Caveat', cursive;
+
+  /* Geometry & Rhythm */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --transition: 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--bg);
+  background-image: 
+    radial-gradient(circle at 12% 16%, rgba(37, 99, 235, 0.08) 0%, transparent 42%),
+    radial-gradient(circle at 88% 22%, rgba(139, 92, 246, 0.08) 0%, transparent 42%),
+    radial-gradient(circle at 50% 85%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+  color: var(--text-primary);
+  font-family: var(--ff-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select {
+  font: inherit;
+  color: inherit;
+}
+button { cursor: pointer; border: none; background: none; }
+ul { list-style: none; }
+table { border-collapse: collapse; width: 100%; }
+fieldset { border: 0; }
+
+/* ── Interactive FX Canvas Layer (Backgrounded) ── */
+#fxCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* Keep UI in front fully clickable */
+  z-index: 5;
+}
+
+/* Ensure UI is crisp and prominently positioned in front of canvas */
+.app-header, .app-container, .fx-dock {
+  position: relative;
+  z-index: 20;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1100;
+  padding: 10px 18px;
+  background: var(--cyan);
+  color: #000;
+  font-family: var(--ff-mono);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  transform: translateY(-160%);
+  transition: transform var(--transition);
+}
+.skip-link:focus { transform: translateY(0); }
+
+:focus-visible {
+  outline: 2px solid var(--cyan-bright);
+  outline-offset: 2px;
+}
+
+/* ── Top Header Navigation ── */
+.app-header {
+  height: 72px;
+  padding: 0 clamp(16px, 3.5vw, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(22, 36, 71, 0.7);
+  background: rgba(6, 10, 22, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #1e3a8a, #06b6d4);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  font-size: 1.45rem;
+  box-shadow: 0 4px 18px rgba(6, 182, 212, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.brand-text h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+}
+
+.brand-text p {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--panel-border);
+  background: rgba(18, 27, 51, 0.7);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  position: relative;
+  transition: all var(--transition);
+}
+.icon-btn:hover {
+  color: #fff;
+  border-color: var(--cyan);
+  background: rgba(30, 48, 86, 0.8);
+}
+
+.notif-dot {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  background: var(--pink);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--pink);
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
+  background: rgba(18, 27, 51, 0.7);
+  border: 1px solid var(--panel-border);
+  border-radius: 9999px;
+  transition: all var(--transition);
+}
+.user-badge:hover { border-color: var(--purple-bright); }
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.user-info { display: flex; flex-direction: column; }
+.user-name { font-size: 0.82rem; font-weight: 600; color: #f1f5f9; line-height: 1.1; }
+.user-dept { font-size: 0.68rem; color: var(--text-muted); font-family: var(--ff-mono); }
+
+/* ── App Layout Shell (Sidebar + Main Workspace) ── */
+.app-container {
+  display: flex;
+  min-height: calc(100vh - 72px);
+}
+
+/* Sidebar */
+.app-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(22, 36, 71, 0.7);
+  background: rgba(7, 12, 26, 0.8);
+  backdrop-filter: blur(16px);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.88rem;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+.sidebar-nav-item:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.04);
+}
+.sidebar-nav-item.is-active {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+}
+
+.nav-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+/* Motivational handwritten sidebar card */
+.quote-card-side {
+  padding: 20px 18px;
+  border-radius: var(--radius-md);
+  background: radial-gradient(circle at 100% 0%, rgba(139, 92, 246, 0.16), transparent 75%),
+              #0c1429;
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+.quote-handwriting {
+  font-family: var(--ff-hand);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #93c5fd;
+  text-shadow: 0 0 12px rgba(147, 197, 253, 0.35);
+}
+
+.quote-sub {
+  margin-top: 10px;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* Theme Switcher */
+.theme-switch-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #0c1429;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+}
+
+.theme-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.switch-pill {
+  width: 44px;
+  height: 24px;
+  background: #1e3a8a;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform var(--transition);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.switch-pill.is-active .switch-thumb {
+  transform: translateX(20px);
+  background: var(--cyan-bright);
+}
+
+/* ── Content Viewport ── */
+.app-viewport {
+  flex: 1;
+  padding: clamp(16px, 2.5vw, 36px);
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── FOREGROUND HERO BANNER & 3D ART CLUSTER ── */
+.hero-banner {
+  background: radial-gradient(circle at 75% 50%, rgba(99, 102, 241, 0.28) 0%, transparent 60%),
+              radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.2) 0%, transparent 50%),
+              #091024;
+  border: 1px solid rgba(59, 130, 246, 0.38);
+  border-radius: var(--radius-xl);
+  padding: clamp(24px, 3.2vw, 38px);
+  position: relative;
+  overflow: visible; /* Allows glowing paper to project in crisp foreground */
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  z-index: 25;
+}
+
+.hero-left {
+  max-width: 580px;
+  position: relative;
+  z-index: 30;
+}
+
+.college-pill {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  background: rgba(37, 99, 235, 0.24);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  color: #93c5fd;
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 4.4vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.hero-title-accent {
+  background: linear-gradient(135deg, #06b6d4, #a855f7, #f43f5e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: 8px;
+}
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+/* ── FOREGROUND 3D EDUCATIONAL CLUSTER (Cap, Textbooks, Glowing A+ Paper, Pen) ── */
+.hero-art-cluster {
+  position: relative;
+  width: 330px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 40; /* High z-index to lock firmly in foreground */
+  pointer-events: none;
+}
+
+/* Floating Cursive Badge */
+.hero-badge-quote {
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  font-family: var(--ff-hand);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #f3e8ff;
+  line-height: 1.1;
+  text-align: right;
+  transform: rotate(8deg);
+  text-shadow: 0 0 16px rgba(216, 180, 254, 0.8), 0 0 32px rgba(168, 85, 247, 0.5);
+  z-index: 45;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.6));
+}
+
+.hero-badge-quote span {
+  display: block;
+  font-size: 1.45rem;
+  color: #c084fc;
+}
+
+/* Glowing A+ Paper Sheet positioned PROMINENTLY in front */
+.paper-sheet-front {
+  position: absolute;
+  top: 14px;
+  right: 28px;
+  width: 120px;
+  height: 160px;
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 65%, #e2e8f0 100%);
+  border-radius: 12px;
+  box-shadow: 
+    0 12px 35px rgba(0, 0, 0, 0.65),
+    0 0 25px rgba(255, 255, 255, 0.35),
+    0 0 45px rgba(168, 85, 247, 0.4);
+  transform: rotate(14deg) translateY(0px);
+  z-index: 38;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  animation: float-paper 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes float-paper {
+  from { transform: rotate(14deg) translateY(-3px); }
+  to { transform: rotate(11deg) translateY(5px); }
+}
+
+.paper-sheet-front::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  border-width: 0 18px 18px 0;
+  border-style: solid;
+  border-color: #cbd5e1 #091024 #cbd5e1 #cbd5e1;
+  box-shadow: -2px 2px 4px rgba(0,0,0,0.15);
+  border-bottom-left-radius: 4px;
+}
+
+.paper-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.paper-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 55%;
+}
+
+.paper-line {
+  height: 4px;
+  border-radius: 2px;
+  background: #cbd5e1;
+}
+.paper-line.short { width: 65%; }
+
+/* Red Stamp 'A+' Grade Circle */
+.paper-grade-stamp {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2.5px solid #ef4444;
+  color: #ef4444;
+  display: grid;
+  place-items: center;
+  font-family: var(--ff-mono);
+  font-weight: 800;
+  font-size: 1.25rem;
+  line-height: 1;
+  transform: rotate(-10deg);
+  box-shadow: inset 0 0 8px rgba(239, 68, 68, 0.2), 0 0 10px rgba(239, 68, 68, 0.25);
+}
+
+.paper-body-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.paper-body-lines .paper-line {
+  background: #94a3b8;
+  opacity: 0.6;
+}
+
+.paper-seal {
+  font-size: 0.62rem;
+  font-family: var(--ff-mono);
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-top: 1px dashed #cbd5e1;
+  padding-top: 4px;
+}
+
+/* Stacked Books Under Cap */
+.books-stack {
+  position: absolute;
+  left: 25px;
+  bottom: 12px;
+  width: 170px;
+  height: 95px;
+  z-index: 32;
+}
+
+.book-item {
+  position: absolute;
+  height: 26px;
+  border-radius: 4px 7px 7px 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.book-item.bottom {
+  bottom: 0;
+  left: 0;
+  width: 165px;
+  background: linear-gradient(90deg, #1e1b4b 0%, #4338ca 40%, #6366f1 100%);
+  border-left: 6px solid #312e81;
+}
+
+.book-item.top {
+  bottom: 24px;
+  left: 10px;
+  width: 150px;
+  background: linear-gradient(90deg, #022c22 0%, #059669 40%, #10b981 100%);
+  border-left: 6px solid #064e3b;
+}
+
+.book-spine-text {
+  font-family: var(--ff-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.12em;
+}
+
+/* 3D Graduation Cap with Floating Animation */
+.cap-3d-wrap {
+  position: absolute;
+  left: 20px;
+  top: 14px;
+  width: 160px;
+  height: 120px;
+  z-index: 36;
+  animation: float-cap 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes float-cap {
+  from { transform: translateY(-4px) rotate(-1deg); }
+  to { transform: translateY(4px) rotate(2deg); }
+}
+
+.cap-mortar-rhombus {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 135px;
+  height: 52px;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 60%, #020617 100%);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  transform: rotate(18deg) skewX(-24deg);
+  border-radius: 4px;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.7),
+    0 0 20px rgba(6, 182, 212, 0.35);
+}
+
+.cap-skull-dome {
+  position: absolute;
+  top: 42px;
+  left: 36px;
+  width: 75px;
+  height: 38px;
+  background: linear-gradient(180deg, #1e293b, #090e1f);
+  border-radius: 0 0 50% 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.6);
+}
+
+.cap-tassel {
+  position: absolute;
+  top: 26px;
+  left: 80px;
+  width: 3px;
+  height: 48px;
+  background: #fbbf24;
+  border-radius: 2px;
+  transform-origin: top center;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+}
+.cap-tassel::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: -4px;
+  width: 11px;
+  height: 12px;
+  background: #f59e0b;
+  border-radius: 2px;
+}
+
+/* Floating Stylus / Fountain Pen */
+.fountain-pen-art {
+  position: absolute;
+  bottom: 18px;
+  right: 12px;
+  width: 115px;
+  height: 16px;
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 55%, #cbd5e1 88%, #fbbf24 100%);
+  border-radius: 8px 3px 3px 8px;
+  transform: rotate(-32deg);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6), 0 0 12px rgba(56, 189, 248, 0.4);
+  z-index: 42;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ── Panels Layout ── */
+.panel[hidden] { display: none !important; }
+
+.dashboard-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.glass-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-xl);
+  padding: clamp(20px, 2.5vw, 32px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.panel-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.panel-icon-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  background: rgba(37, 99, 235, 0.18);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+}
+.panel-icon-circle.purple {
+  background: rgba(147, 51, 234, 0.18);
+  border-color: rgba(168, 85, 247, 0.35);
+}
+.panel-icon-circle.green {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.panel-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+}
+.panel-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.status-badge-cie {
+  font-family: var(--ff-mono);
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  color: var(--cyan-bright);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  letter-spacing: 0.05em;
+}
+
+/* ── Form Components ── */
+.component-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.component-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.input-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.input-box-tile {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  transition: all var(--transition);
+  position: relative;
+}
+.input-box-tile:hover {
+  border-color: rgba(59, 130, 246, 0.45);
+}
+.input-box-tile:focus-within {
+  border-color: var(--cyan-bright);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.18);
+  background: #081024;
+}
+
+.input-box-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.comp-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.comp-badge.blue   { background: rgba(37, 99, 235, 0.25); color: #93c5fd; }
+.comp-badge.purple { background: rgba(168, 85, 247, 0.25); color: #d8b4fe; }
+.comp-badge.cyan   { background: rgba(6, 182, 212, 0.25); color: #67e8f9; }
+.comp-badge.gold   { background: rgba(245, 158, 11, 0.25); color: #fde68a; }
+
+.input-box-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+.input-box-sub {
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  margin-left: auto;
+  font-family: var(--ff-mono);
+}
+
+.input-field-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.clean-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-family: var(--ff-mono);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 4px 50px 4px 0;
+  outline: none;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.clean-input::-webkit-inner-spin-button,
+.clean-input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.clean-input::placeholder {
+  color: #334155;
+  font-weight: 400;
+}
+
+.input-unit {
+  position: absolute;
+  right: 0;
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+/* Attendance Progress Bar & Chips */
+.bar {
+  position: relative;
+  overflow: hidden;
+  height: 6px;
+  border-radius: 999px;
+  background: #0c1429;
+  margin-top: 10px;
+}
+.bar__fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(var(--fill, 0));
+  transform-origin: left center;
+  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  background: linear-gradient(90deg, #2563eb, #06b6d4);
+}
+
+.tiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.tier {
+  padding: 3px 9px;
+  border-radius: 9999px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.02);
+  font-family: var(--ff-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+.tier.is-on {
+  color: #fff;
+  border-color: var(--cyan);
+  background: rgba(6, 182, 212, 0.22);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+}
+
+/* Primary Action Buttons */
+.btn-primary-glow {
+  width: 100%;
+  min-height: 54px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, #2563eb 0%, #06b6d4 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 8px 26px rgba(6, 182, 212, 0.35);
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+  margin-top: 24px;
+}
+.btn-primary-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 34px rgba(6, 182, 212, 0.5);
+}
+.btn-primary-glow:active { transform: translateY(1px); }
+
+.btn-primary-glow.purple {
+  background: linear-gradient(90deg, #7c3aed 0%, #3b82f6 100%);
+  box-shadow: 0 8px 26px rgba(124, 58, 237, 0.35);
+}
+.btn-primary-glow.green {
+  background: linear-gradient(90deg, #059669 0%, #06b6d4 100%);
+  box-shadow: 0 8px 26px rgba(16, 185, 129, 0.35);
+}
+
+.btn__shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: skewX(-20deg);
+  animation: btn-sweep 4s infinite;
+  pointer-events: none;
+}
+@keyframes btn-sweep {
+  0% { transform: translateX(0) skewX(-20deg); }
+  25%, 100% { transform: translateX(450%) skewX(-20deg); }
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: #fecdd3;
+  font-size: 0.84rem;
+  margin-top: 16px;
+}
+.alert[hidden] { display: none; }
+
+/* ── Results Panel Architecture ── */
+.results-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Speedometer Gauge Box */
+.gauge-showcase-box {
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-xl);
+  padding: 26px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.gauge-svg-wrap {
+  position: relative;
+  width: 190px;
+  height: 190px;
+}
+
+.gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.gauge-bg-circle {
+  fill: none;
+  stroke: #0e172e;
+  stroke-width: 14;
+}
+
+.gauge-fill-circle {
+  fill: none;
+  stroke: url(#cyanBlueGrad);
+  stroke-width: 14;
+  stroke-linecap: round;
+  stroke-dasharray: 471;
+  stroke-dashoffset: 471;
+  transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;
+  filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.6));
+}
+
+.gauge-center-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.gauge-val {
+  font-family: var(--ff-mono);
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.gauge-max {
+  font-family: var(--ff-mono);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  margin-top: 3px;
+}
+
+.gauge-caption {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+
+/* Submetrics */
+.submetric-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+.submetric-card {
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.submetric-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-xs);
+  display: grid;
+  place-items: center;
+  font-size: 1.1rem;
+}
+.submetric-icon.blue   { background: rgba(37, 99, 235, 0.2); color: #93c5fd; }
+.submetric-icon.purple { background: rgba(147, 51, 234, 0.2); color: #d8b4fe; }
+.submetric-icon.green  { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+
+.submetric-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.submetric-val {
+  font-family: var(--ff-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+/* Motivational Quote Box */
+.effort-quote-card {
+  background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.15), transparent 70%),
+              var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.effort-quote-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.effort-quote-text {
+  font-size: 0.86rem;
+  color: #e2e8f0;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Verdict Status Banner */
+.verdict {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  animation: pop-verdict 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.verdict[hidden] { display: none; }
+@keyframes pop-verdict {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.verdict.is-pass {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.verdict.is-fail {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+}
+.verdict__emoji {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.verdict__title {
+  display: block;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.verdict.is-pass .verdict__title { color: #34d399; }
+.verdict.is-fail .verdict__title { color: #f87171; }
+.verdict__detail {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Detailed Breakdown Tiles */
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card {
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card__label {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.card__val {
+  font-family: var(--ff-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+.card__max {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+.btn-ghost {
+  padding: 10px 18px;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-family: var(--ff-mono);
+  transition: all var(--transition);
+  align-self: flex-start;
+}
+.btn-ghost:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Panel 2: Target Predictor Componentry ── */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.chip {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  font-family: var(--ff-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+.chip:hover {
+  color: #fff;
+  border-color: var(--purple-bright);
+}
+.chip.is-sel {
+  background: rgba(147, 51, 234, 0.25);
+  border-color: var(--purple-bright);
+  color: #d8b4fe;
+  box-shadow: 0 0 12px rgba(147, 51, 234, 0.35);
+}
+
+.predict-out {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.predict-out[hidden] { display: none !important; }
+
+.empty {
+  padding: 24px;
+  border: 1px dashed var(--panel-border);
+  border-radius: var(--radius-md);
+  color: var(--text-faint);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  background: rgba(12, 18, 36, 0.4);
+}
+.empty[hidden] { display: none; }
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.summary__label {
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.summary__val {
+  font-family: var(--ff-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--cyan-bright);
+  margin-top: 2px;
+}
+
+.req {
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+.req__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.req__icon { font-size: 1.3rem; }
+.req__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+}
+.req__sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.strategies {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.strategy {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.strategy[hidden] { display: none; }
+.strategy__name {
+  font-size: 0.72rem;
+  font-family: var(--ff-mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.strategy--cyan .strategy__name { color: #38bdf8; }
+.strategy--gold .strategy__name { color: #f59e0b; }
+.strategy--green .strategy__name { color: #10b981; }
+
+.req-item-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.req-item {
+  background: #080e21;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-border);
+}
+.req-item__label {
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+.req-item__val {
+  font-family: var(--ff-mono);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 2px;
+}
+.req-item__unit {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+}
+.req-item__note {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font-family: var(--ff-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+.pill.is-easy  { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+.pill.is-tough { background: rgba(245, 158, 11, 0.2); color: #fde68a; }
+.pill.is-hard  { background: rgba(244, 63, 94, 0.2); color: #fecdd3; }
+
+.unreach {
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(244, 63, 94, 0.15);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  color: #fca5a5;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.unreach[hidden] { display: none; }
+.unreach__tip {
+  display: block;
+  margin-top: 4px;
+  color: #fde68a;
+  font-weight: 600;
+}
+
+/* Scenarios Projection Table */
+.scenarios {
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.scenarios__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.scenarios__title {
+  font-size: 0.78rem;
+  font-family: var(--ff-mono);
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.table-scroll { overflow-x: auto; }
+.table th, .table td {
+  padding: 10px 16px;
+  font-size: 0.78rem;
+  font-family: var(--ff-mono);
+  text-align: left;
+  white-space: nowrap;
+}
+.table thead th {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-faint);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+.table tbody tr {
+  border-top: 1px solid rgba(255, 255, 255, 0.03);
+}
+.table__total { font-weight: 700; }
+.table__total.is-target { color: #34d399; }
+.table__total.is-pass { color: #38bdf8; }
+.table__total.is-fail { color: #f59e0b; }
+
+.status {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+.status.is-pass { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+.status.is-fail { background: rgba(244, 63, 94, 0.2); color: #fca5a5; }
+
+/* ── Module 3: SGPA & CGPA Studio Styles ── */
+.gpa-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: var(--input-bg);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--panel-border);
+  width: fit-content;
+}
+.gpa-tab-btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--ff-mono);
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+.gpa-tab-btn.is-active {
+  background: rgba(16, 185, 129, 0.22);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.course-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 2.2fr) 95px 115px 36px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  animation: course-in 0.25s var(--transition) both;
+}
+@keyframes course-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.course-input, .course-select {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #fff;
+  font-family: var(--ff-mono);
+  font-size: 0.84rem;
+}
+.course-select option {
+  background: #090e1f;
+  color: #fff;
+}
+.course-input:focus, .course-select:focus {
+  border-color: var(--cyan-bright);
+  outline: none;
+}
+
+.manual-credit-field {
+  width: 100%;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.btn-del-row {
+  color: #f43f5e;
+  font-size: 1.1rem;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  transition: all var(--transition);
+}
+.btn-del-row:hover {
+  background: rgba(244, 63, 94, 0.2);
+}
+
+.gpa-actions-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-family: var(--ff-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.btn-mini:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: var(--cyan);
+}
+
+/* CGPA 8-Semester Matrix */
+.sem-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.sem-card {
+  background: var(--input-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sem-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--ff-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #93c5fd;
+}
+.sem-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.sem-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+.sem-toggle-wrap input[type="checkbox"] {
+  accent-color: var(--green);
+  cursor: pointer;
+}
+
+/* ── Interactive FX Floating Dock / Controller ── */
+.fx-dock {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(10, 17, 36, 0.85);
+  border: 1px solid var(--panel-border);
+  padding: 6px 10px;
+  border-radius: 9999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 1000;
+}
+
+.fx-dock-btn {
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+  font-family: var(--ff-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+.fx-dock-btn:hover {
+  background: rgba(6, 182, 212, 0.25);
+  border-color: var(--cyan);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* ── Formula Reference Bar & Footer ── */
+.formulas-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.formula-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(12, 18, 36, 0.6);
+  border: 1px solid var(--panel-border);
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+.formula-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.formula-tag-dot.blue  { background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
+.formula-tag-dot.cyan  { background: #06b6d4; box-shadow: 0 0 6px #06b6d4; }
+.formula-tag-dot.gold  { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+.formula-tag-dot.green { background: #10b981; box-shadow: 0 0 6px #10b981; }
+
+.app-footer {
+  text-align: center;
+  padding: 24px 0 12px;
+  color: #475569;
+  font-size: 0.74rem;
+  font-family: var(--ff-mono);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .app-sidebar { width: 210px; }
+  .hero-banner { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .hero-art-cluster { align-self: center; }
+  .dashboard-split { grid-template-columns: minmax(0, 1fr); }
+  .sem-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .app-container { flex-direction: column; }
+  .app-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--panel-border); padding: 16px; }
+  .quote-card-side { display: none; }
+  .input-tile-grid { grid-template-columns: minmax(0, 1fr); }
+  .submetric-row { grid-template-columns: minmax(0, 1fr); }
+  .course-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fx-dock { bottom: 8px; right: 8px; flex-wrap: wrap; justify-content: center; }
+}
+</style>
+</head>
+
+<body>
+<!-- Interactive FX & Particle Canvas Layer -->
+<canvas id="fxCanvas"></canvas>
+
+<!-- Interactive FX Controller Dock (Bottom Right) -->
+<div class="fx-dock" aria-label="Visual Canvas Effects Controls">
+  <button class="fx-dock-btn" id="btn-fx-shell" title="Trigger Aerial Peony Shell">🎆 Giant Shell</button>
+  <button class="fx-dock-btn" id="btn-fx-confetti" title="Trigger Confetti Cannons">🎉 Confetti</button>
+  <button class="fx-dock-btn" id="btn-fx-stardust" title="Launch Stardust Sparkler Storm">✨ Stardust</button>
+  <button class="fx-dock-btn" id="btn-fx-clear" title="Clear Screen Particles">⚡ Clear</button>
+</div>
+
+<a class="skip-link" href="#main">Skip to Calculator</a>
+
+<!-- Top Glass Navbar -->
+<header class="app-header">
+  <a href="#" class="brand-wrap">
+    <div class="brand-icon">🎓</div>
+    <div class="brand-text">
+      <h1>CIE Marks Calculator</h1>
+      <p>Bapatla Engineering College</p>
+    </div>
+  </a>
+
+  <div class="header-actions">
+    <button class="icon-btn" aria-label="Notifications">
+      <span>🔔</span>
+      <span class="notif-dot"></span>
+    </button>
+    <div class="user-badge">
+      <div class="user-avatar">ST</div>
+      <div class="user-info">
+        <span class="user-name">Student</span>
+        <span class="user-dept">B.E. (CSE)</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Workspace (Sidebar + Viewport) -->
+<div class="app-container">
+
+  <!-- Left Sidebar Navigation -->
+  <aside class="app-sidebar">
+    <div class="nav-group" role="tablist" aria-label="Calculator Modes">
+      <button class="sidebar-nav-item is-active" id="tab-calc" role="tab" type="button" aria-selected="true" aria-controls="panel-calc">
+        <span class="nav-icon">📊</span>
+        <span>Calculate CIE</span>
+      </button>
+
+      <button class="sidebar-nav-item" id="tab-predict" role="tab" type="button" aria-selected="false" aria-controls="panel-predict" tabindex="-1">
+        <span class="nav-icon">🎯</span>
+        <span>Target Predictor</span>
+      </button>
+
+      <button class="sidebar-nav-item" id="tab-gpa" role="tab" type="button" aria-selected="false" aria-controls="panel-gpa" tabindex="-1">
+        <span class="nav-icon">📈</span>
+        <span>SGPA &amp; CGPA</span>
+      </button>
+
+      <button class="sidebar-nav-item" type="button" id="btn-demo-data">
+        <span class="nav-icon">⚡</span>
+        <span>Auto-Fill Sample</span>
+      </button>
+
+      <a href="#formulas" class="sidebar-nav-item">
+        <span class="nav-icon">📐</span>
+        <span>Formulas</span>
+      </a>
+    </div>
+
+    <!-- Motivational Handwritten Card in Sidebar -->
+    <div class="quote-card-side">
+      <p class="quote-handwriting">Small Steps Make Big Results 🚀</p>
+      <p class="quote-sub">Your future is built by what you do today.</p>
+    </div>
+
+    <!-- Dark Mode Switcher -->
+    <div class="theme-switch-wrap">
+      <div class="theme-label">
+        <span>🌙</span>
+        <span>Dark Mode</span>
+      </div>
+      <div class="switch-pill is-active" id="themeToggle" role="switch" aria-checked="true" tabindex="0">
+        <div class="switch-thumb"></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Viewport Area -->
+  <main class="app-viewport" id="main">
+
+    <!-- ── Hero Banner with PROMINENT FOREGROUND ILLUSTRATION ── -->
+    <section class="hero-banner">
+      <div class="hero-left">
+        <span class="college-pill">Bapatla Engineering College</span>
+        <h2 class="hero-title">Academic <span class="hero-title-accent">Evaluation</span> Studio</h2>
+        <p class="hero-desc">Continuous Internal Evaluation, Target Planner &amp; SGPA/CGPA Estimator.</p>
+
+        <div class="hero-tags">
+          <span class="hero-tag">⚡ Fast &amp; Accurate</span>
+          <span class="hero-tag">🛡️ Autonomous R24</span>
+          <span class="hero-tag">✨ Tap Screen for Fireworks</span>
+        </div>
+      </div>
+
+      <!-- FOREGROUND 3D EDUCATIONAL GRAPHIC CLUSTER -->
+      <div class="hero-art-cluster" aria-label="Academic achievement graphic with graduation cap, textbooks, and glowing A+ report sheet">
+        <!-- Floating Cursive Slogan -->
+        <div class="hero-badge-quote">
+          Better Marks,
+          <span>Brighter Future 💜</span>
+        </div>
+
+        <!-- Stack of Textbooks -->
+        <div class="books-stack">
+          <div class="book-item bottom">
+            <span class="book-spine-text">CIE EVALUATION</span>
+          </div>
+          <div class="book-item top">
+            <span class="book-spine-text">AUTONOMOUS R24</span>
+          </div>
+        </div>
+
+        <!-- 3D Graduation Cap with Tassel -->
+        <div class="cap-3d-wrap">
+          <div class="cap-mortar-rhombus"></div>
+          <div class="cap-skull-dome"></div>
+          <div class="cap-tassel"></div>
+        </div>
+
+        <!-- VIVID FOREGROUND GLOWING A+ REPORT PAPER -->
+        <div class="paper-sheet-front">
+          <div class="paper-header-row">
+            <div class="paper-lines">
+              <div class="paper-line"></div>
+              <div class="paper-line short"></div>
+              <div class="paper-line"></div>
+            </div>
+            <div class="paper-grade-stamp">A+</div>
+          </div>
+          <div class="paper-body-lines">
+            <div class="paper-line"></div>
+            <div class="paper-line"></div>
+            <div class="paper-line short"></div>
+          </div>
+          <div class="paper-seal">BEC &bull; VERIFIED</div>
+        </div>
+
+        <!-- Stylus Fountain Pen -->
+        <div class="fountain-pen-art"></div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PANEL 1 — CALCULATE CIE (Default View)
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="panel" id="panel-calc" role="tabpanel" aria-labelledby="tab-calc" tabindex="0">
+      <div class="dashboard-split">
+
+        <!-- Left Input Form -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div class="panel-header-left">
+              <div class="panel-icon-circle">📋</div>
+              <div>
+                <h3 class="panel-title">Enter Your Marks</h3>
+                <p class="panel-subtitle">Fill in your marks for each component (out of 30/10/100)</p>
+              </div>
+            </div>
+            <span class="status-badge-cie">CIE 40</span>
+          </div>
+
+          <form id="calcForm" novalidate>
+            <!-- Term Exams -->
+            <div class="component-section">
+              <div class="component-title-row">
+                <span>📝</span>
+                <span>Term Examinations (75% Best + 25% Other &rarr; Scaled to 20)</span>
+              </div>
+              <div class="input-tile-grid">
+                <div class="input-box-tile">
+                  <div class="input-box-header">
+                    <span class="comp-badge blue">T1</span>
+                    <label for="t1" class="input-box-label">Term 1</label>
+                    <span class="input-box-sub">out of 30</span>
+                  </div>
+                  <div class="input-field-wrap">
+                    <input type="number" id="t1" name="t1" class="clean-input" placeholder="0.0" min="0" max="30" step="0.5" inputmode="decimal" autocomplete="off" />
+                    <span class="input-unit" id="t1-max">/ 30</span>
+                  </div>
+                </div>
+
+                <div class="input-box-tile">
+                  <div class="input-box-header">
+                    <span class="comp-badge purple">T2</span>
+                    <label for="t2" class="input-box-label">Term 2</label>
+                    <span class="input-box-sub">out of 30</span>
+                  </div>
+                  <div class="input-field-wrap">
+                    <input type="number" id="t2" name="t2" class="clean-input" placeholder="0.0" min="0" max="30" step="0.5" inputmode="decimal" autocomplete="off" />
+                    <span class="input-unit" id="t2-max">/ 30</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AAT Tests -->
+            <div class="component-section">
+              <div class="component-title-row">
+                <span>✏️</span>
+                <span>AAT Tests (Average of Both &rarr; Scaled to 15)</span>
+              </div>
+              <div class="input-tile-grid">
+                <div class="input-box-tile">
+                  <div class="input-box-header">
+                    <span class="comp-badge cyan">A1</span>
+                    <label for="a1" class="input-box-label">AAT 1</label>
+                    <span class="input-box-sub">out of 10</span>
+                  </div>
+                  <div class="input-field-wrap">
+                    <input type="number" id="a1" name="a1" class="clean-input" placeholder="0.0" min="0" max="10" step="0.5" inputmode="decimal" autocomplete="off" />
+                    <span class="input-unit" id="a1-max">/ 10</span>
+                  </div>
+                </div>
+
+                <div class="input-box-tile">
+                  <div class="input-box-header">
+                    <span class="comp-badge cyan">A2</span>
+                    <label for="a2" class="input-box-label">AAT 2</label>
+                    <span class="input-box-sub">out of 10</span>
+                  </div>
+                  <div class="input-field-wrap">
+                    <input type="number" id="a2" name="a2" class="clean-input" placeholder="0.0" min="0" max="10" step="0.5" inputmode="decimal" autocomplete="off" />
+                    <span class="input-unit" id="a2-max">/ 10</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Attendance -->
+            <div class="component-section">
+              <div class="component-title-row">
+                <span>📅</span>
+                <span>Attendance Percentage (Banded up to 5 Marks)</span>
+              </div>
+              <div class="input-box-tile">
+                <div class="input-box-header">
+                  <span class="comp-badge gold">ATT</span>
+                  <label for="att" class="input-box-label">Attendance Percentage</label>
+                  <span class="input-box-sub">up to 5 marks</span>
+                </div>
+                <div class="input-field-wrap">
+                  <input type="number" id="att" name="att" class="clean-input" placeholder="0.0" min="0" max="100" step="0.1" inputmode="decimal" autocomplete="off" data-att-input data-bar="attBar" data-tiers="calc" />
+                  <span class="input-unit">%</span>
+                </div>
+                <div class="bar bar--att" id="attBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <span class="bar__fill" data-fill></span>
+                </div>
+                <ul class="tiers" id="att-tiers" data-tiers-group="calc">
+                  <li class="tier tier--2" data-tier="2">75%+ (2M)</li>
+                  <li class="tier tier--3" data-tier="3">80%+ (3M)</li>
+                  <li class="tier tier--4" data-tier="4">85%+ (4M)</li>
+                  <li class="tier tier--5" data-tier="5">90%+ (5M)</li>
+                </ul>
+              </div>
+            </div>
+
+            <p class="alert" id="calcError" role="alert" hidden>
+              Please enter valid marks: Term (0-30), AAT (0-10), Attendance (0-100%).
+            </p>
+
+            <button type="submit" class="btn-primary-glow">
+              <span class="btn__shine" aria-hidden="true"></span>
+              <span>Calculate Internal Marks &rarr;</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Results Analytics View -->
+        <div class="results-column" id="calcResults">
+          <div class="glass-panel" id="totalDisplay">
+            <div class="panel-header">
+              <div class="panel-header-left">
+                <div class="panel-icon-circle purple">🎯</div>
+                <div>
+                  <h3 class="panel-title">Your Result</h3>
+                  <p class="panel-subtitle">Your calculated CIE marks will appear here</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Glowing Speedometer Ring -->
+            <div class="gauge-showcase-box">
+              <div class="gauge-svg-wrap">
+                <svg class="gauge-svg" viewBox="0 0 180 180" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="cyanBlueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#2563eb" />
+                      <stop offset="100%" stop-color="#22d3ee" />
+                    </linearGradient>
+                  </defs>
+                  <circle class="gauge-bg-circle" cx="90" cy="90" r="75" />
+                  <circle class="gauge-fill-circle" id="svgGaugeCircle" cx="90" cy="90" r="75" />
+                </svg>
+                <div class="gauge-center-text">
+                  <output class="gauge-val" id="rTotal">--</output>
+                  <span class="gauge-max">/ 40</span>
+                  <span class="gauge-caption">Internal Marks</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric Summary Stats -->
+            <div class="submetric-row" style="margin-top: 16px;">
+              <div class="submetric-card">
+                <div class="submetric-icon blue">&Sigma;</div>
+                <div>
+                  <div class="submetric-label">Scaled CIE Total</div>
+                  <div class="submetric-val" id="rTotalSub">— / 40</div>
+                </div>
+              </div>
+              <div class="submetric-card">
+                <div class="submetric-icon purple">%</div>
+                <div>
+                  <div class="submetric-label">Percentage</div>
+                  <output class="submetric-val" id="rPct">0.00%</output>
+                </div>
+              </div>
+            </div>
+
+            <!-- Motivational Banner -->
+            <div class="effort-quote-card" style="margin-top: 14px;">
+              <span class="effort-quote-icon">💡</span>
+              <p class="effort-quote-text">&ldquo;Good marks don't define you, your efforts do! &hearts;&rdquo;</p>
+            </div>
+
+            <!-- Pass / Fail Verdict Card -->
+            <div class="verdict" id="verdict" role="status" hidden style="margin-top: 14px;">
+              <span class="verdict__emoji" id="vEmoji" aria-hidden="true"></span>
+              <div>
+                <span class="verdict__title" id="vTitle"></span>
+                <span class="verdict__detail" id="vDetail"></span>
+              </div>
+            </div>
+
+            <!-- Detailed Breakdown Tiles -->
+            <div class="cards" style="margin-top: 14px;">
+              <div class="card" data-card>
+                <span class="card__label">Term Exams Contribution</span>
+                <span class="card__val"><output id="rTerm">—</output><span class="card__max"> / 20</span></span>
+              </div>
+              <div class="card" data-card>
+                <span class="card__label">AAT Tests Contribution</span>
+                <span class="card__val"><output id="rAat">—</output><span class="card__max"> / 15</span></span>
+              </div>
+              <div class="card" data-card>
+                <span class="card__label">Attendance Marks</span>
+                <span class="card__val"><output id="rAtt">—</output><span class="card__max"> / 5</span></span>
+              </div>
+            </div>
+
+            <!-- Hidden semantic hooks preserved for JS parity -->
+            <div class="sr-only">
+              <span id="totalGhost">40</span>
+              <div id="totalBar"><span id="barTotal" data-fill></span></div>
+              <span id="barTerm" data-fill></span>
+              <span id="barAat" data-fill></span>
+              <span id="barAtt" data-fill></span>
+            </div>
+
+            <button class="btn-ghost" type="button" id="calcReset" style="margin-top: 18px;">Clear All Inputs</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PANEL 2 — WHAT DO I STILL NEED? (Target Predictor Page)
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="panel" id="panel-predict" role="tabpanel" aria-labelledby="tab-predict" tabindex="0" hidden>
+      <div class="dashboard-split">
+
+        <!-- Form for Predictor -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div class="panel-header-left">
+              <div class="panel-icon-circle purple">🎯</div>
+              <div>
+                <h3 class="panel-title">Target Goal Finder</h3>
+                <p class="panel-subtitle">Find the exact marks you need in Term 2 &amp; AAT 2 to reach your goal</p>
+              </div>
+            </div>
+            <span class="status-badge-cie">PLANNER</span>
+          </div>
+
+          <form id="predictForm" novalidate>
+            <!-- Term Marks -->
+            <div class="component-section">
+              <div class="component-title-row">
+                <span>📝</span>
+                <span>Term Examinations</span>
+              </div>
+              <div class="input-tile-grid">
+                <div class="input-box-tile">
+                  <div class="input-box-header">
+                    <span class="comp-badge blue">T1</span>
+                    <label for="pt1" class="input-box-label">Term 1 (Written)</label>
+                    <span class="input-box-sub">/ 30</span>
+                  </div>
+                  <div class="input-field-wrap">
+                    <input type="number" id="pt1" class="clean-input" placeholder="0.0" min="0" max="30" step="0.5" inputmode="decimal" autocomplete="off" />
+                    <span class="input-unit" id="pt1-max">/ 30</span>
+                  </div>
+                </div>
+
+                <div class="input-box-tile">
+                  <div class="input-box-header">
+                    <span class="comp-badge purple">T2</span>
+                    <label for="pt2" class="input-box-label">Term 2 (Target)</label>
+                    <span class="input-box-sub">leave blank</span>
+                  </div>
+                  <div class="input-field-wrap">
+                    <input type="number" id="pt2" class="clean-input" placeholder="—" min="0" max="30" step="0.5" inputmode="decimal" autocomplete="off" />
+                    <span class="input-unit">/ 30</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AAT Marks -->
+            <div class="component-section">
+              <div class="component-title-row">
+                <span>✏️</span>
+                <span>AAT Tests</span>
+              </div>
+              <div class="input-tile-grid">
+                <div class="input-box-tile">
+                  <div class="input-box-header">
+                    <span class="comp-badge cyan">A1</span>
+                    <label for="pa1" class="input-box-label">AAT 1 (Written)</label>
+                    <span class="input-box-sub">/ 10</span>
+                  </div>
+                  <div class="input-field-wrap">
+                    <input type="number" id="pa1" class="clean-input" placeholder="0.0" min="0" max="10" step="0.5" inputmode="decimal" autocomplete="off" />
+                    <span class="input-unit" id="pa1-max">/ 10</span>
+                  </div>
+                </div>
+
+                <div class="input-box-tile">
+                  <div class="input-box-header">
+                    <span class="comp-badge cyan">A2</span>
+                    <label for="pa2" class="input-box-label">AAT 2 (Target)</label>
+                    <span class="input-box-sub">leave blank</span>
+                  </div>
+                  <div class="input-field-wrap">
+                    <input type="number" id="pa2" class="clean-input" placeholder="—" min="0" max="10" step="0.5" inputmode="decimal" autocomplete="off" />
+                    <span class="input-unit">/ 10</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Attendance -->
+            <div class="component-section">
+              <div class="component-title-row">
+                <span>📅</span>
+                <span>Attendance Percentage</span>
+              </div>
+              <div class="input-box-tile">
+                <div class="input-box-header">
+                  <span class="comp-badge gold">ATT</span>
+                  <label for="patt" class="input-box-label">Attendance Expected</label>
+                  <span class="input-box-sub">%</span>
+                </div>
+                <div class="input-field-wrap">
+                  <input type="number" id="patt" class="clean-input" placeholder="0.0" min="0" max="100" step="0.1" inputmode="decimal" autocomplete="off" data-att-input data-bar="pAttBar" data-tiers="predict" />
+                  <span class="input-unit">%</span>
+                </div>
+                <div class="bar bar--att" id="pAttBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <span class="bar__fill" data-fill></span>
+                </div>
+                <ul class="tiers" id="patt-tiers" data-tiers-group="predict">
+                  <li class="tier tier--2" data-tier="2">75%+ (2M)</li>
+                  <li class="tier tier--3" data-tier="3">80%+ (3M)</li>
+                  <li class="tier tier--4" data-tier="4">85%+ (4M)</li>
+                  <li class="tier tier--5" data-tier="5">90%+ (5M)</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Desired Target Score Selector -->
+            <div class="component-section">
+              <div class="component-title-row">
+                <span>🎯</span>
+                <span>Desired Target Score (out of 40)</span>
+              </div>
+              <div class="chips" role="group" aria-label="Preset Targets">
+                <button class="chip" type="button" data-target="21" aria-pressed="false">Pass (21)</button>
+                <button class="chip" type="button" data-target="25" aria-pressed="false">25</button>
+                <button class="chip" type="button" data-target="28" aria-pressed="false">28</button>
+                <button class="chip is-sel" type="button" data-target="30" aria-pressed="true">30 (First Class)</button>
+                <button class="chip" type="button" data-target="35" aria-pressed="false">35</button>
+                <button class="chip" type="button" data-target="40" aria-pressed="false">Full (40)</button>
+              </div>
+              <div class="input-box-tile">
+                <div class="input-box-header">
+                  <label for="ptarget" class="input-box-label">Custom Goal</label>
+                  <span class="input-box-sub">out of 40</span>
+                </div>
+                <div class="input-field-wrap">
+                  <input type="number" id="ptarget" class="clean-input" value="30" min="1" max="40" step="0.5" inputmode="decimal" />
+                  <span class="input-unit">/ 40</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="alert" id="predictError" role="alert" hidden>
+              Please enter your Term 1, AAT 1, and attendance percentage.
+            </p>
+
+            <button type="submit" class="btn-primary-glow purple">
+              <span class="btn__shine" aria-hidden="true"></span>
+              <span>Find Required Marks &rarr;</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Right Results for Predictor -->
+        <div class="results-column" id="predictResults">
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-header-left">
+                <div class="panel-icon-circle purple">🗺️</div>
+                <div>
+                  <h3 class="panel-title">What You Need</h3>
+                  <p class="panel-subtitle">Tailored strategies &amp; outcome matrix</p>
+                </div>
+              </div>
+            </div>
+
+            <p class="empty" id="predictEmpty">
+              Fill in your Term 1, AAT 1 and attendance, then click &ldquo;Find Required Marks&rdquo;. You'll get three custom paths plus a scenario projections grid.
+            </p>
+
+            <div class="predict-out" id="predictOut" hidden>
+              <!-- Locked Summary -->
+              <div class="summary" data-card>
+                <div>
+                  <div class="summary__label">Term 1 Base</div>
+                  <div class="summary__val" id="pSumTerm">—</div>
+                </div>
+                <div>
+                  <div class="summary__label">AAT 1 Base</div>
+                  <div class="summary__val" id="pSumAat">—</div>
+                </div>
+                <div>
+                  <div class="summary__label">Attendance</div>
+                  <div class="summary__val" id="pSumAtt">—</div>
+                </div>
+              </div>
+
+              <!-- Requirements / Routes -->
+              <section class="req" data-card aria-labelledby="pReqTitle">
+                <div class="req__head">
+                  <span class="req__icon" aria-hidden="true">🎯</span>
+                  <div>
+                    <h4 class="req__title" id="pReqTitle">—</h4>
+                    <p class="req__sub" id="pReqSub">—</p>
+                  </div>
+                </div>
+
+                <div class="strategies">
+                  <!-- Route A -->
+                  <div class="strategy strategy--cyan" id="pStratA">
+                    <h5 class="strategy__name">Route A: Full Marks in AAT 2 (10/10)</h5>
+                    <div class="req-item-grid">
+                      <div class="req-item">
+                        <div class="req-item__label">Term 2 Needed</div>
+                        <div class="req-item__val" id="pReqT2A">—<span class="req-item__unit"> / 30</span></div>
+                        <div class="req-item__note">Assumes AAT 2 = 10 <span class="pill" id="pReqT2AChip"></span></div>
+                      </div>
+                      <div class="req-item">
+                        <div class="req-item__label">Percentage of Paper</div>
+                        <div class="req-item__val" id="pTermPct">—</div>
+                        <div class="req-item__note">of Term 2 paper</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Route B -->
+                  <div class="strategy strategy--gold" id="pStratB">
+                    <h5 class="strategy__name">Route B: Full Marks in Term 2 (30/30)</h5>
+                    <div class="req-item-grid">
+                      <div class="req-item">
+                        <div class="req-item__label">AAT 2 Needed</div>
+                        <div class="req-item__val" id="pReqA2B">—<span class="req-item__unit"> / 10</span></div>
+                        <div class="req-item__note">Assumes Term 2 = 30 <span class="pill" id="pReqA2BChip"></span></div>
+                      </div>
+                      <div class="req-item">
+                        <div class="req-item__label">Percentage of Test</div>
+                        <div class="req-item__val" id="pAatPct">—</div>
+                        <div class="req-item__note">of AAT 2 test</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Route C -->
+                  <div class="strategy strategy--green" id="pStratC">
+                    <h5 class="strategy__name">Route C: Balanced Effort (Both Tests)</h5>
+                    <div class="req-item-grid">
+                      <div class="req-item">
+                        <div class="req-item__label">Term 2 Needed</div>
+                        <div class="req-item__val" id="pReqT2C">—<span class="req-item__unit"> / 30</span></div>
+                        <div class="req-item__note"><span class="pill" id="pReqT2CChip"></span></div>
+                      </div>
+                      <div class="req-item">
+                        <div class="req-item__label">AAT 2 Needed</div>
+                        <div class="req-item__val" id="pReqA2C">—<span class="req-item__unit"> / 10</span></div>
+                        <div class="req-item__note"><span class="pill" id="pReqA2CChip"></span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Out of Reach Message -->
+                  <p class="unreach" id="pUnreach" hidden>
+                    <span id="pUnreachMsg"></span>
+                    <span class="unreach__tip" id="pUnreachTip"></span>
+                  </p>
+                </div>
+              </section>
+
+              <!-- Scenarios Simulation Table -->
+              <div class="scenarios" data-card>
+                <div class="scenarios__head">
+                  <span>📊</span>
+                  <span class="scenarios__title">Outcome Projections for Plausible Marks</span>
+                </div>
+                <div class="table-scroll">
+                  <table class="table">
+                    <thead>
+                      <tr><th>Term 2</th><th>AAT 2</th><th>Total CIE</th><th>Outcome</th></tr>
+                    </thead>
+                    <tbody id="scenarioBody">
+                      <tr data-t2="20" data-a2="6"><th>20 / 30</th><td>6 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                      <tr data-t2="24" data-a2="7"><th>24 / 30</th><td>7 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                      <tr data-t2="27" data-a2="8"><th>27 / 30</th><td>8 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                      <tr data-t2="30" data-a2="9"><th>30 / 30</th><td>9 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                      <tr data-t2="30" data-a2="10"><th>30 / 30</th><td>10 / 10</td><td class="table__total">—</td><td><span class="status"></span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <button class="btn-ghost" type="button" id="predictReset" style="margin-top: 8px;">Reset Predictor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         PANEL 3 — SGPA & CGPA STUDIO (Module 3 with Manual Credits)
+         ═══════════════════════════════════════════════════════════════ -->
+    <section class="panel" id="panel-gpa" role="tabpanel" aria-labelledby="tab-gpa" tabindex="0" hidden>
+      <div class="dashboard-split">
+
+        <!-- Left Form Card: SGPA & CGPA Inputs -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <div class="panel-header-left">
+              <div class="panel-icon-circle green">📈</div>
+              <div>
+                <h3 class="panel-title">SGPA &amp; CGPA Studio</h3>
+                <p class="panel-subtitle">Manual credit weights supported under BEC Autonomous Regulations</p>
+              </div>
+            </div>
+            <span class="status-badge-cie" style="color: #6ee7b7; border-color: rgba(16, 185, 129, 0.4);">MANUAL CREDITS</span>
+          </div>
+
+          <!-- Mode Switcher between SGPA and CGPA -->
+          <div class="gpa-tabs">
+            <button class="gpa-tab-btn is-active" type="button" id="btn-mode-sgpa">Semester SGPA</button>
+            <button class="gpa-tab-btn" type="button" id="btn-mode-cgpa">Cumulative CGPA</button>
+          </div>
+
+          <!-- Sub-View A: SGPA Calculator -->
+          <div id="sgpa-calculator-view">
+            <div class="component-title-row" style="margin-bottom: 12px;">
+              <span>📚</span>
+              <span>Semester Courses (Type your exact subject name &amp; manual credit hours)</span>
+            </div>
+
+            <div id="course-rows-container">
+              <!-- Default initial rows with editable credit inputs -->
+              <div class="course-row">
+                <input type="text" class="course-input" placeholder="Course Name" value="Design &amp; Analysis of Algorithms" />
+                <input type="number" class="course-input manual-credit-field cr-val" value="3.0" min="0.5" max="15" step="0.5" placeholder="Credits" title="Manual Credits" />
+                <select class="course-select gr-val">
+                  <option value="10">O (10)</option>
+                  <option value="9" selected>A+ (9)</option>
+                  <option value="8">A (8)</option>
+                  <option value="7">B+ (7)</option>
+                  <option value="6">B (6)</option>
+                  <option value="5">C (5)</option>
+                  <option value="0">F (0)</option>
+                </select>
+                <button type="button" class="btn-del-row" title="Remove Subject">&times;</button>
+              </div>
+
+              <div class="course-row">
+                <input type="text" class="course-input" placeholder="Course Name" value="Operating Systems" />
+                <input type="number" class="course-input manual-credit-field cr-val" value="3.0" min="0.5" max="15" step="0.5" placeholder="Credits" title="Manual Credits" />
+                <select class="course-select gr-val">
+                  <option value="10">O (10)</option>
+                  <option value="9">A+ (9)</option>
+                  <option value="8" selected>A (8)</option>
+                  <option value="7">B+ (7)</option>
+                  <option value="6">B (6)</option>
+                  <option value="5">C (5)</option>
+                  <option value="0">F (0)</option>
+                </select>
+                <button type="button" class="btn-del-row" title="Remove Subject">&times;</button>
+              </div>
+
+              <div class="course-row">
+                <input type="text" class="course-input" placeholder="Course Name" value="Database Management Systems" />
+                <input type="number" class="course-input manual-credit-field cr-val" value="3.0" min="0.5" max="15" step="0.5" placeholder="Credits" title="Manual Credits" />
+                <select class="course-select gr-val">
+                  <option value="10" selected>O (10)</option>
+                  <option value="9">A+ (9)</option>
+                  <option value="8">A (8)</option>
+                  <option value="7">B+ (7)</option>
+                  <option value="0">F (0)</option>
+                </select>
+                <button type="button" class="btn-del-row" title="Remove Subject">&times;</button>
+              </div>
+
+              <div class="course-row">
+                <input type="text" class="course-input" placeholder="Course Name" value="Software Engineering" />
+                <input type="number" class="course-input manual-credit-field cr-val" value="3.0" min="0.5" max="15" step="0.5" placeholder="Credits" title="Manual Credits" />
+                <select class="course-select gr-val">
+                  <option value="10">O (10)</option>
+                  <option value="9">A+ (9)</option>
+                  <option value="8" selected>A (8)</option>
+                  <option value="7">B+ (7)</option>
+                  <option value="0">F (0)</option>
+                </select>
+                <button type="button" class="btn-del-row" title="Remove Subject">&times;</button>
+              </div>
+
+              <div class="course-row">
+                <input type="text" class="course-input" placeholder="Course Name" value="OS &amp; DBMS Laboratory" />
+                <input type="number" class="course-input manual-credit-field cr-val" value="1.5" min="0.5" max="15" step="0.5" placeholder="Credits" title="Manual Credits" />
+                <select class="course-select gr-val">
+                  <option value="10" selected>O (10)</option>
+                  <option value="9">A+ (9)</option>
+                  <option value="8">A (8)</option>
+                  <option value="0">F (0)</option>
+                </select>
+                <button type="button" class="btn-del-row" title="Remove Subject">&times;</button>
+              </div>
+            </div>
+
+            <div class="gpa-actions-row">
+              <button type="button" class="btn-mini" id="btn-add-course">➕ Add Course</button>
+              <button type="button" class="btn-mini" id="btn-clear-courses">🗑️ Reset List</button>
+            </div>
+
+            <button type="button" class="btn-primary-glow green" id="btn-calc-sgpa" style="margin-top: 20px;">
+              <span class="btn__shine" aria-hidden="true"></span>
+              <span>Calculate Semester SGPA &rarr;</span>
+            </button>
+          </div>
+
+          <!-- Sub-View B: CGPA Cumulative Matrix with Manual Credits -->
+          <div id="cgpa-calculator-view" hidden>
+            <div class="component-title-row" style="margin-bottom: 12px;">
+              <span>🎓</span>
+              <span>8-Semester Matrix (Enter manual SGPA and custom semester credits)</span>
+            </div>
+
+            <div class="sem-grid" id="sem-grid-container">
+              <!-- Dynamically populated 8 semesters -->
+            </div>
+
+            <button type="button" class="btn-primary-glow green" id="btn-calc-cgpa" style="margin-top: 20px;">
+              <span class="btn__shine" aria-hidden="true"></span>
+              <span>Compute Cumulative CGPA &rarr;</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Results Analytics: GPA Scorecard -->
+        <div class="results-column">
+          <div class="glass-panel">
+            <div class="panel-header">
+              <div class="panel-header-left">
+                <div class="panel-icon-circle green">🏆</div>
+                <div>
+                  <h3 class="panel-title">GPA Performance</h3>
+                  <p class="panel-subtitle">Official Autonomous Grade Point Analysis</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Glowing Speedometer Ring for GPA -->
+            <div class="gauge-showcase-box">
+              <div class="gauge-svg-wrap">
+                <svg class="gauge-svg" viewBox="0 0 180 180" aria-hidden="true">
+                  <circle class="gauge-bg-circle" cx="90" cy="90" r="75" />
+                  <circle class="gauge-fill-circle" id="svgGpaGauge" cx="90" cy="90" r="75" style="stroke: url(#cyanBlueGrad);" />
+                </svg>
+                <div class="gauge-center-text">
+                  <output class="gauge-val" id="gpaScoreDisplay">--</output>
+                  <span class="gauge-max">/ 10.0</span>
+                  <span class="gauge-caption" id="gpaTypeLabel">SGPA RATING</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submetrics: Total Credits & Percentage Equivalent -->
+            <div class="submetric-row" style="margin-top: 16px;">
+              <div class="submetric-card">
+                <div class="submetric-icon green">🎯</div>
+                <div>
+                  <div class="submetric-label">Total Credits</div>
+                  <div class="submetric-val" id="gpaCreditsVal">0.0</div>
+                </div>
+              </div>
+              <div class="submetric-card">
+                <div class="submetric-icon purple">%</div>
+                <div>
+                  <div class="submetric-label">Equivalent %</div>
+                  <output class="submetric-val" id="gpaPctVal">0.00%</output>
+                </div>
+              </div>
+            </div>
+
+            <!-- Honors Classification Verdict -->
+            <div class="verdict is-pass" id="gpaVerdictBox" style="margin-top: 16px;">
+              <span class="verdict__emoji" id="gpaEmoji">🌟</span>
+              <div>
+                <span class="verdict__title" id="gpaClassTitle">Awaiting Input</span>
+                <span class="verdict__detail" id="gpaClassDetail">Enter your course grades to evaluate your degree classification.</span>
+              </div>
+            </div>
+
+            <!-- BEC Grade Scale Reference Table -->
+            <div class="scenarios" style="margin-top: 14px;">
+              <div class="scenarios__head">
+                <span>📘</span>
+                <span class="scenarios__title">BEC R20 Grade Pointer Matrix</span>
+              </div>
+              <div class="table-scroll">
+                <table class="table">
+                  <thead>
+                    <tr><th>Grade</th><th>Points</th><th>Marks Range</th><th>Class</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><th>O</th><td>10</td><td>&ge; 90%</td><td>Outstanding</td></tr>
+                    <tr><th>A+</th><td>9</td><td>80% – 89%</td><td>Excellent</td></tr>
+                    <tr><th>A</th><td>8</td><td>70% – 79%</td><td>Very Good</td></tr>
+                    <tr><th>B+</th><td>7</td><td>60% – 69%</td><td>Good</td></tr>
+                    <tr><th>B</th><td>6</td><td>50% – 59%</td><td>Above Average</td></tr>
+                    <tr><th>C</th><td>5</td><td>40% – 49%</td><td>Pass</td></tr>
+                    <tr><th>F</th><td>0</td><td>&lt; 40%</td><td>Fail</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Formula Reference Bar -->
+    <aside class="formulas-bar" id="formulas" aria-label="Official Calculation Rules">
+      <div class="formula-tag"><span class="formula-tag-dot blue"></span> Term = (0.75 &times; Max + 0.25 &times; Min) &times; 20/30</div>
+      <div class="formula-tag"><span class="formula-tag-dot cyan"></span> AAT = Average(AAT 1, AAT 2) &times; 15/10</div>
+      <div class="formula-tag"><span class="formula-tag-dot gold"></span> Attendance: 75% (2M), 80% (3M), 85% (4M), 90%+ (5M)</div>
+      <div class="formula-tag"><span class="formula-tag-dot green"></span> SGPA = &Sigma;(Credits &times; Points) &divide; &Sigma;Credits</div>
+    </aside>
+
+    <footer class="app-footer">
+      <p>CIE &amp; SGPA/CGPA Academic Studio &bull; Bapatla Engineering College &bull; Autonomous Regulations</p>
+    </footer>
+  </main>
+</div>
+
+<!-- ==========================================================================
+     CORE JAVASCRIPT: ADVANCED MULTI-STAGE CANVAS FX ENGINE & LOGIC
+     ========================================================================== -->
+<script>
+(function () {
+  'use strict';
+
+  /* ── 1. Advanced Multi-Stage Canvas FX Suite (60-120 FPS) ── */
+  const fxSuite = (function () {
+    const canvas = document.getElementById('fxCanvas');
+    if (!canvas) {
+      return {
+        launchCelebration: () => {},
+        launchPeonyShell: () => {},
+        launchConfettiCannons: () => {},
+        sprayStardust: () => {},
+        clearAll: () => {}
+      };
+    }
+
+    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initConstellation();
+    }, { passive: true });
+
+    // Multi-type Particle Stores
+    const rockets = [];
+    const particles = [];
+    const confettis = [];
+    const shockwaves = [];
+    const ambientNodes = [];
+
+    let isAnimActive = false;
+    let animFrameId = null;
+    let isMouseDown = false;
+
+    const NEON_PALETTE = [
+      '#22d3ee', '#38bdf8', '#60a5fa', '#818cf8',
+      '#a855f7', '#c084fc', '#f472b6', '#ec4899',
+      '#34d399', '#10b981', '#fbbf24', '#f59e0b', '#ffffff'
+    ];
+
+    /* Ambient Constellation Cyber-Particles */
+    function initConstellation() {
+      ambientNodes.length = 0;
+      const count = Math.floor(Math.min(width, 1400) / 36);
+      for (let i = 0; i < count; i++) {
+        ambientNodes.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          radius: 1 + Math.random() * 1.5
+        });
+      }
+    }
+    initConstellation();
+
+    /* Sound Synthesizer via Web Audio API */
+    const audioCtx = (function() {
+      try {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        return new AudioClass();
+      } catch (e) {
+        return null;
+      }
+    })();
+
+    function playTone(freq, type = 'sine', duration = 0.15, vol = 0.08) {
+      if (!audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    /* Shockwave Ring Object */
+    class Shockwave {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = 4;
+        this.maxRadius = 55 + Math.random() * 45;
+        this.alpha = 1;
+        this.color = color;
+        this.lineWidth = 3;
+      }
+      update() {
+        this.radius += 3.8;
+        this.alpha = Math.max(0, 1 - (this.radius / this.maxRadius));
+        this.lineWidth = Math.max(0.5, this.lineWidth * 0.96);
+        return this.radius < this.maxRadius;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha * 0.7;
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = this.lineWidth;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, 6.2831853);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    /* Ascending Shell Rocket */
+    class ShellRocket {
+      constructor(targetX, targetY) {
+        this.x = targetX + (Math.random() - 0.5) * 80;
+        this.y = height + 10;
+        this.targetX = targetX;
+        this.targetY = targetY;
+        const angle = Math.atan2(targetY - this.y, targetX - this.x);
+        const speed = 15 + Math.random() * 4.5;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.color = NEON_PALETTE[Math.floor(Math.random() * NEON_PALETTE.length)];
+        this.trail = [];
+      }
+      update() {
+        this.trail.push({ x: this.x, y: this.y });
+        if (this.trail.length > 5) this.trail.shift();
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.16; // gravity
+
+        // Secondary sparklers on ascent
+        if (Math.random() > 0.4) {
+          particles.push(new FireworkSpark(this.x, this.y, '#fde68a', 0.8, 1.5, true));
+        }
+
+        if (this.vy >= 0 || this.y <= this.targetY) {
+          this.detonate();
+          return false;
+        }
+        return true;
+      }
+      draw() {
+        ctx.save();
+        ctx.beginPath();
+        for (let i = 0; i < this.trail.length; i++) {
+          const pt = this.trail[i];
+          ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+      }
+      detonate() {
+        shockwaves.push(new Shockwave(this.x, this.y, this.color));
+        playTone(320 + Math.random() * 180, 'triangle', 0.35, 0.12);
+
+        // Peony Star Burst
+        const starCount = 65 + Math.floor(Math.random() * 40);
+        for (let i = 0; i < starCount; i++) {
+          particles.push(new FireworkSpark(this.x, this.y, this.color, 2.5, 6.5, false));
+        }
+      }
+    }
+
+    /* Spherical Peony Firework Spark Particle */
+    class FireworkSpark {
+      constructor(x, y, color, minSpd, maxSpd, isAscentSpark) {
+        this.x = x;
+        this.y = y;
+        const angle = Math.random() * 6.2831853;
+        const speed = minSpd + Math.random() * (maxSpd - minSpd);
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.alpha = 1;
+        this.decay = isAscentSpark ? (0.04 + Math.random() * 0.04) : (0.012 + Math.random() * 0.016);
+        this.gravity = isAscentSpark ? 0.05 : 0.09;
+        this.color = color;
+        this.size = isAscentSpark ? (1.5 + Math.random()) : (2.2 + Math.random() * 2);
+        this.flicker = Math.random() > 0.4;
+      }
+      update() {
+        this.vx *= 0.96;
+        this.vy *= 0.96;
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.alpha -= this.decay;
+        return this.alpha > 0;
+      }
+      draw() {
+        ctx.save();
+        const curAlpha = this.flicker && Math.random() > 0.5 ? this.alpha * 0.5 : this.alpha;
+        ctx.globalAlpha = Math.max(0, curAlpha);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, 6.2831853);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    /* 3D Tumbling Confetti Cannon Particle */
+    class ConfettiPiece {
+      constructor(x, y, angleDeg, speedRange) {
+        this.x = x;
+        this.y = y;
+        const rad = (angleDeg + (Math.random() - 0.5) * 35) * (Math.PI / 180);
+        const speed = speedRange[0] + Math.random() * (speedRange[1] - speedRange[0]);
+        this.vx = Math.cos(rad) * speed;
+        this.vy = Math.sin(rad) * speed;
+        this.width = 6 + Math.random() * 6;
+        this.height = 10 + Math.random() * 8;
+        this.rotation = Math.random() * 360;
+        this.rotationSpeed = (Math.random() - 0.5) * 12;
+        this.flip = Math.random() * 360;
+        this.flipSpeed = 6 + Math.random() * 8;
+        this.color = NEON_PALETTE[Math.floor(Math.random() * NEON_PALETTE.length)];
+        this.alpha = 1;
+        this.decay = 0.0035 + Math.random() * 0.004;
+        this.drag = 0.98;
+        this.gravity = 0.16;
+      }
+      update() {
+        this.vx *= this.drag;
+        this.vy *= this.drag;
+        this.vy += this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotation += this.rotationSpeed;
+        this.flip += this.flipSpeed;
+        this.alpha -= this.decay;
+        return this.alpha > 0 && this.y < height + 40;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.rotation * Math.PI) / 180);
+        const scaleY = Math.cos((this.flip * Math.PI) / 180);
+        ctx.scale(1, scaleY);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        ctx.restore();
+      }
+    }
+
+    /* Interactive Stardust Sparkler Stream */
+    function sprayStardust(x, y, count = 12) {
+      for (let i = 0; i < count; i++) {
+        const p = new FireworkSpark(x, y, '#22d3ee', 1, 4.5, false);
+        p.gravity = 0.06;
+        p.decay = 0.025 + Math.random() * 0.02;
+        particles.push(p);
+      }
+      wakeEngine();
+    }
+
+    /* Canvas Render & Physics Loop */
+    function loop() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Render Ambient Constellation Mesh
+      renderConstellation();
+
+      // Render Shockwaves
+      for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const sw = shockwaves[i];
+        if (sw.update()) sw.draw();
+        else shockwaves.splice(i, 1);
+      }
+
+      // Render Rockets
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        if (r.update()) r.draw();
+        else rockets.splice(i, 1);
+      }
+
+      // Render Firework Sparks
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        if (p.update()) p.draw();
+        else particles.splice(i, 1);
+      }
+
+      // Render Confetti Pieces
+      for (let i = confettis.length - 1; i >= 0; i--) {
+        const c = confettis[i];
+        if (c.update()) c.draw();
+        else confettis.splice(i, 1);
+      }
+
+      if (
+        rockets.length > 0 ||
+        particles.length > 0 ||
+        confettis.length > 0 ||
+        shockwaves.length > 0 ||
+        isMouseDown
+      ) {
+        animFrameId = requestAnimationFrame(loop);
+      } else {
+        isAnimActive = false;
+        animFrameId = null;
+      }
+    }
+
+    function renderConstellation() {
+      ctx.save();
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.06)';
+      ctx.lineWidth = 0.8;
+
+      for (let i = 0; i < ambientNodes.length; i++) {
+        const n = ambientNodes[i];
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 0 || n.x > width) n.vx *= -1;
+        if (n.y < 0 || n.y > height) n.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius, 0, 6.2831853);
+        ctx.fill();
+
+        for (let j = i + 1; j < ambientNodes.length; j++) {
+          const n2 = ambientNodes[j];
+          const dx = n.x - n2.x;
+          const dy = n.y - n2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 110) {
+            ctx.beginPath();
+            ctx.moveTo(n.x, n.y);
+            ctx.lineTo(n2.x, n2.y);
+            ctx.stroke();
+          }
+        }
+      }
+      ctx.restore();
+    }
+
+    function wakeEngine() {
+      if (!isAnimActive) {
+        isAnimActive = true;
+        animFrameId = requestAnimationFrame(loop);
+      }
+    }
+
+    /* Public FX Triggers */
+    function launchPeonyShell(targetX, targetY) {
+      const tx = targetX || (width * 0.2 + Math.random() * width * 0.6);
+      const ty = targetY || (height * 0.15 + Math.random() * height * 0.35);
+      rockets.push(new ShellRocket(tx, ty));
+      playTone(200, 'sine', 0.15, 0.06);
+      wakeEngine();
+    }
+
+    function launchConfettiCannons() {
+      for (let i = 0; i < 45; i++) {
+        confettis.push(new ConfettiPiece(20, height - 10, -55, [14, 23]));
+      }
+      for (let i = 0; i < 45; i++) {
+        confettis.push(new ConfettiPiece(width - 20, height - 10, -125, [14, 23]));
+      }
+      playTone(480, 'sine', 0.25, 0.09);
+      wakeEngine();
+    }
+
+    function launchCelebration() {
+      launchPeonyShell(width * 0.35, height * 0.25);
+      setTimeout(() => launchPeonyShell(width * 0.65, height * 0.22), 220);
+      setTimeout(() => launchPeonyShell(width * 0.50, height * 0.18), 440);
+      setTimeout(launchConfettiCannons, 300);
+    }
+
+    function clearAll() {
+      rockets.length = 0;
+      particles.length = 0;
+      confettis.length = 0;
+      shockwaves.length = 0;
+      ctx.clearRect(0, 0, width, height);
+    }
+
+    /* Background Interactive triggers */
+    window.addEventListener('mousedown', (e) => {
+      // Don't fire if interacting with an input or button
+      if (e.target.closest('button, input, select, a, .glass-panel')) return;
+      isMouseDown = true;
+      launchPeonyShell(e.clientX, e.clientY);
+    });
+    window.addEventListener('mouseup', () => { isMouseDown = false; });
+    window.addEventListener('mousemove', (e) => {
+      if (!e.target.closest('button, input, select, a') && Math.random() > 0.55) {
+        sprayStardust(e.clientX, e.clientY, 2);
+      }
+    });
+
+    return {
+      launchCelebration,
+      launchPeonyShell,
+      launchConfettiCannons,
+      sprayStardust,
+      clearAll
+    };
+  })();
+
+  /* ── 2. Calculation Constants & Bounds ── */
+  const MAX = {
+    TERM: 30,
+    AAT: 10,
+    TERM_SCALED: 20,
+    AAT_SCALED: 15,
+    ATT: 5,
+    TOTAL: 40
+  };
+  const PASS_MARK = 20;
+  const SCENARIO_DECIMALS = 1;
+
+  /* ── 3. Pure Calculation Functions ── */
+  function attMarksFromPct(att) {
+    if (att >= 90) return 5;
+    if (att >= 85) return 4;
+    if (att >= 80) return 3;
+    if (att >= 75) return 2;
+    return 0;
+  }
+
+  function termScore(t1, t2) {
+    const best = Math.max(t1, t2);
+    const other = Math.min(t1, t2);
+    return (0.75 * best + 0.25 * other) * (MAX.TERM_SCALED / MAX.TERM);
+  }
+
+  function aatScore(a1, a2) {
+    return ((a1 + a2) / 2) * (MAX.AAT_SCALED / MAX.AAT);
+  }
+
+  function solveT2(t1, x) {
+    const y = x * MAX.TERM / MAX.TERM_SCALED;
+    const a = (y - 0.25 * t1) / 0.75;
+    if (a >= t1) return Math.ceil(a * 10) / 10;
+    const b = (y - 0.75 * t1) / 0.25;
+    return Math.ceil(b * 10) / 10;
+  }
+
+  function solveA2(a1, x) {
+    return Math.ceil((x * (MAX.AAT * 2 / MAX.AAT_SCALED) - a1) * 10) / 10;
+  }
+
+  function classify(value, max) {
+    if (value <= 0) return 'easy';
+    if (value > max) return 'hard';
+    if (value / max > 0.85) return 'tough';
+    return 'easy';
+  }
+  const RATING_LABEL = { easy: 'Achievable', tough: 'Challenging', hard: 'Not possible' };
+
+  /* ── 4. DOM Animation & Counter Helpers ── */
+  const $ = (id) => document.getElementById(id);
+  const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const live = document.createElement('div');
+  live.className = 'sr-only';
+  live.setAttribute('aria-live', 'polite');
+  document.body.appendChild(live);
+  const announce = (msg) => { live.textContent = msg; };
+
+  const counters = new Set();
+  let rafId = null;
+
+  function tick(now) {
+    counters.forEach((c) => {
+      if (c.start === null) c.start = now;
+      const t = Math.min((now - c.start) / c.duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      c.el.textContent = format(c.to * eased, c.decimals, c.suffix);
+      if (t >= 1) {
+        c.el.textContent = format(c.to, c.decimals, c.suffix);
+        counters.delete(c);
+      }
+    });
+    rafId = counters.size ? requestAnimationFrame(tick) : null;
+  }
+
+  const format = (n, decimals, suffix) => n.toFixed(decimals) + (suffix || '');
+
+  function countTo(el, to, decimals, duration, suffix) {
+    if (!el) return;
+    counters.forEach((c) => { if (c.el === el) counters.delete(c); });
+    if (reduceMotion || !duration) {
+      el.textContent = format(to, decimals, suffix);
+      return;
+    }
+    counters.add({ el, to, decimals, duration, suffix, start: null });
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  function setBar(fillEl, ratio) {
+    if (!fillEl) return;
+    fillEl.style.setProperty('--fill', clamp(ratio, 0, 1).toFixed(4));
+  }
+
+  function setText(el, value) { if (el) el.textContent = value; }
+
+  function setState(el, state, all) {
+    if (!el) return;
+    all.forEach((s) => el.classList.remove(s));
+    if (state) el.classList.add(state);
+  }
+
+  /* Radial Speedometer Gauge Animator */
+  const gaugeCirc = $('svgGaugeCircle');
+  const GAUGE_CIRCUMFERENCE = 2 * Math.PI * 75; // ~471
+  if (gaugeCirc) {
+    gaugeCirc.style.strokeDasharray = GAUGE_CIRCUMFERENCE;
+    gaugeCirc.style.strokeDashoffset = GAUGE_CIRCUMFERENCE;
+  }
+
+  function updateGauge(score, isPass) {
+    if (!gaugeCirc) return;
+    const ratio = clamp(score / MAX.TOTAL, 0, 1);
+    const offset = GAUGE_CIRCUMFERENCE - (ratio * GAUGE_CIRCUMFERENCE);
+    gaugeCirc.style.strokeDashoffset = offset;
+    gaugeCirc.style.stroke = isPass ? 'url(#cyanBlueGrad)' : '#f43f5e';
+  }
+
+  /* ── 5. Attendance Bars & Tiers ── */
+  function paintTiers(group, pct) {
+    const list = document.querySelector('[data-tiers-group="' + group + '"]');
+    if (!list) return;
+    const marks = attMarksFromPct(pct);
+    list.querySelectorAll('.tier').forEach((li) => {
+      li.classList.toggle('is-on', Number(li.dataset.tier) === marks);
+    });
+  }
+
+  function bindAttendanceInput(input) {
+    const barWrap = $(input.dataset.bar);
+    const fill = barWrap ? barWrap.querySelector('[data-fill]') : null;
+    const group = input.dataset.tiers;
+
+    input.addEventListener('input', function () {
+      const pct = clamp(parseFloat(this.value) || 0, 0, 100);
+      setBar(fill, pct / 100);
+      paintTiers(group, pct);
+    }, { passive: true });
+  }
+
+  /* ── 6. Sidebar Navigation & Tab Switching ── */
+  function initTabs() {
+    const tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+
+    function select(tab, moveFocus) {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.classList.toggle('is-active', on);
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        const panel = $(t.getAttribute('aria-controls'));
+        if (panel) panel.hidden = !on;
+      });
+      if (moveFocus) tab.focus();
+    }
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(tab, false));
+      tab.addEventListener('keydown', (e) => {
+        const keys = { ArrowDown: 1, ArrowUp: -1, ArrowRight: 1, ArrowLeft: -1 };
+        if (e.key in keys) {
+          e.preventDefault();
+          select(tabs[(i + keys[e.key] + tabs.length) % tabs.length], true);
+        }
+      });
+    });
+  }
+
+  /* ── 7. Module 1: CIE Marks Calculator Controller ── */
+  const calc = (function () {
+    const form = $('calcForm');
+    if (!form) return {};
+
+    const fields = { t1: $('t1'), t2: $('t2'), a1: $('a1'), a2: $('a2'), att: $('att') };
+    const error = $('calcError');
+    const cards = document.querySelectorAll('#calcResults [data-card]');
+    const totalBox = $('totalDisplay');
+    const verdict = $('verdict');
+
+    function read() {
+      const v = {
+        t1: parseFloat(fields.t1.value),
+        t2: parseFloat(fields.t2.value),
+        a1: parseFloat(fields.a1.value),
+        a2: parseFloat(fields.a2.value),
+        att: parseFloat(fields.att.value)
+      };
+      const bad = [];
+      const check = (key, max) => {
+        const ok = !isNaN(v[key]) && v[key] >= 0 && v[key] <= max;
+        fields[key].setAttribute('aria-invalid', ok ? 'false' : 'true');
+        if (!ok) bad.push(fields[key]);
+      };
+      check('t1', MAX.TERM); check('t2', MAX.TERM);
+      check('a1', MAX.AAT);  check('a2', MAX.AAT);
+      check('att', 100);
+      return { values: v, invalid: bad };
+    }
+
+    function render(v) {
+      const term = termScore(v.t1, v.t2);
+      const aat = aatScore(v.a1, v.a2);
+      const att = attMarksFromPct(v.att);
+      const total = term + aat + att;
+      const pct = (total / MAX.TOTAL) * 100;
+      const passed = total > PASS_MARK;
+
+      cards.forEach((c) => c.classList.add('is-lit'));
+      if (totalBox) totalBox.classList.add('is-lit');
+
+      countTo($('rTerm'), term, 2, 500);
+      countTo($('rAat'), aat, 2, 500);
+      countTo($('rAtt'), att, 0, 400);
+      countTo($('rTotal'), total, 2, 600);
+      countTo($('rPct'), pct, 2, 600, '%');
+
+      setText($('rTotalSub'), total.toFixed(2) + ' / 40');
+      updateGauge(total, passed);
+
+      setBar($('barTerm'), term / MAX.TERM_SCALED);
+      setBar($('barAat'), aat / MAX.AAT_SCALED);
+      setBar($('barAtt'), att / MAX.ATT);
+      setBar($('barTotal'), total / MAX.TOTAL);
+
+      verdict.hidden = false;
+      setState(verdict, passed ? 'is-pass' : 'is-fail', ['is-pass', 'is-fail']);
+      setText($('vEmoji'), passed ? '🎉' : '⚠️');
+      setText($('vTitle'), passed ? 'Congratulations, You Passed!' : 'Requires Additional Effort');
+      setText($('vDetail'), passed
+        ? total.toFixed(2) + ' out of 40 — Safely above the passing threshold of 20 marks.'
+        : total.toFixed(2) + ' out of 40 — Need ' + (PASS_MARK - total).toFixed(2) + ' more marks to reach the 20-mark benchmark.');
+
+      // Launch Celebratory FX Suite upon passing!
+      if (passed) {
+        fxSuite.launchCelebration();
+      }
+
+      announce('Total CIE marks: ' + total.toFixed(2) + ' out of 40. ' + (passed ? 'Pass' : 'Fail'));
+    }
+
+    function reset() {
+      fxSuite.clearAll();
+      Object.keys(fields).forEach((k) => {
+        fields[k].value = '';
+        fields[k].setAttribute('aria-invalid', 'false');
+      });
+      const attFill = $('attBar') ? $('attBar').querySelector('[data-fill]') : null;
+      setBar(attFill, 0);
+      paintTiers('calc', 0);
+
+      ['rTerm', 'rAat', 'rAtt'].forEach((id) => setText($(id), '—'));
+      setText($('rTotal'), '--');
+      setText($('rTotalSub'), '— / 40');
+      setText($('rPct'), '0.00%');
+      updateGauge(0, true);
+
+      verdict.hidden = true;
+      error.hidden = true;
+      fields.t1.focus();
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const r = read();
+      if (r.invalid.length) {
+        error.hidden = false;
+        r.invalid[0].focus();
+        return;
+      }
+      error.hidden = true;
+      render(r.values);
+    });
+
+    $('calcReset').addEventListener('click', reset);
+    return { render, reset, fields };
+  })();
+
+  /* ── 8. Module 2: Target Predictor Controller ── */
+  const predictor = (function () {
+    const form = $('predictForm');
+    if (!form) return {};
+
+    const fields = { pt1: $('pt1'), pt2: $('pt2'), pa1: $('pa1'), pa2: $('pa2'), patt: $('patt'), ptarget: $('ptarget') };
+    const error = $('predictError');
+    const empty = $('predictEmpty');
+    const out = $('predictOut');
+    const chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+    const rows = Array.prototype.slice.call(document.querySelectorAll('#scenarioBody tr'));
+
+    function syncChips(value) {
+      chips.forEach((c) => {
+        const on = Number(c.dataset.target) === value;
+        c.classList.toggle('is-sel', on);
+        c.setAttribute('aria-pressed', String(on));
+      });
+    }
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        fields.ptarget.value = chip.dataset.target;
+        syncChips(Number(chip.dataset.target));
+      });
+    });
+
+    fields.ptarget.addEventListener('input', function () {
+      syncChips(parseFloat(this.value));
+    }, { passive: true });
+
+    function paintRequirement(valEl, pillEl, needed, max, unit) {
+      const rating = classify(needed, max);
+      const shown = needed <= 0 ? 'Any' : clamp(needed, 0, max).toFixed(1);
+      valEl.innerHTML = '';
+      valEl.appendChild(document.createTextNode(shown));
+      if (unit) {
+        const u = document.createElement('span');
+        u.className = 'req-item__unit';
+        u.textContent = ' / ' + max;
+        valEl.appendChild(u);
+      }
+      setState(valEl, 'is-' + rating, ['is-easy', 'is-tough', 'is-hard']);
+      if (pillEl) {
+        pillEl.textContent = RATING_LABEL[rating];
+        setState(pillEl, 'is-' + rating, ['is-easy', 'is-tough', 'is-hard']);
+      }
+      return rating;
+    }
+
+    function read() {
+      const v = {
+        t1: parseFloat(fields.pt1.value),
+        a1: parseFloat(fields.pa1.value),
+        att: parseFloat(fields.patt.value),
+        target: parseFloat(fields.ptarget.value) || 30
+      };
+      const bad = [];
+      const check = (el, val, max) => {
+        const ok = !isNaN(val) && val >= 0 && val <= max;
+        el.setAttribute('aria-invalid', ok ? 'false' : 'true');
+        if (!ok) bad.push(el);
+      };
+      check(fields.pt1, v.t1, MAX.TERM);
+      check(fields.pa1, v.a1, MAX.AAT);
+      check(fields.patt, v.att, 100);
+      return { values: v, invalid: bad };
+    }
+
+    function render(v) {
+      const attMarks = attMarksFromPct(v.att);
+      const needed = v.target - attMarks;
+      const termIfMax = termScore(v.t1, MAX.TERM);
+      const aatIfMax = aatScore(v.a1, MAX.AAT);
+      const maxRemaining = termIfMax + aatIfMax;
+
+      empty.hidden = true;
+      out.hidden = false;
+
+      setText($('pSumTerm'), termScore(v.t1, 0).toFixed(2) + ' / 20');
+      setText($('pSumAat'), (v.a1 * 0.75).toFixed(2) + ' / 15');
+      setText($('pSumAtt'), attMarks + ' / 5');
+
+      setText($('pReqTitle'), 'Target ' + v.target + ' / 40: Need ' + Math.max(0, needed).toFixed(1) + ' marks from Term 2 & AAT 2');
+      setText($('pReqSub'), 'Attendance locked at ' + attMarks + ' of 5 marks.');
+
+      // Route A
+      const termNeededIfAatMax = needed - aatIfMax;
+      const reqT2A = termNeededIfAatMax <= 0 ? 0 : solveT2(v.t1, termNeededIfAatMax);
+      paintRequirement($('pReqT2A'), $('pReqT2AChip'), reqT2A, MAX.TERM, true);
+      setText($('pTermPct'), reqT2A > 0 ? (clamp(reqT2A, 0, MAX.TERM) / MAX.TERM * 100).toFixed(0) + '%' : '—');
+
+      // Route B
+      const aatNeededIfTermMax = needed - termIfMax;
+      const reqA2B = aatNeededIfTermMax <= 0 ? 0 : solveA2(v.a1, aatNeededIfTermMax);
+      paintRequirement($('pReqA2B'), $('pReqA2BChip'), reqA2B, MAX.AAT, true);
+      setText($('pAatPct'), reqA2B > 0 ? (clamp(reqA2B, 0, MAX.AAT) / MAX.AAT * 100).toFixed(0) + '%' : '—');
+
+      // Route C
+      const reachable = needed <= maxRemaining;
+      const stratC = $('pStratC');
+      const unreach = $('pUnreach');
+
+      if (reachable) {
+        let reqT2C = 0, reqA2C = 0;
+        if (needed > 0) {
+          const ratio = needed / maxRemaining;
+          reqT2C = solveT2(v.t1, termIfMax * ratio);
+          reqA2C = solveA2(v.a1, aatIfMax * ratio);
+        }
+        paintRequirement($('pReqT2C'), $('pReqT2CChip'), reqT2C, MAX.TERM, true);
+        paintRequirement($('pReqA2C'), $('pReqA2CChip'), reqA2C, MAX.AAT, true);
+        stratC.hidden = false;
+        unreach.hidden = true;
+      } else {
+        stratC.hidden = true;
+        unreach.hidden = false;
+        setText($('pUnreachMsg'), 'Target ' + v.target + ' is out of reach even with 30/30 in Term 2 and 10/10 in AAT 2.');
+        setText($('pUnreachTip'), attMarks < MAX.ATT ? 'Boosting attendance to 90%+ would add ' + (MAX.ATT - attMarks) + ' marks.' : '');
+      }
+
+      // Scenario Projection Table
+      rows.forEach((row) => {
+        const t2 = Number(row.dataset.t2);
+        const a2 = Number(row.dataset.a2);
+        const total = termScore(v.t1, t2) + aatScore(v.a1, a2) + attMarks;
+        const pass = total > PASS_MARK;
+        const hit = total >= v.target;
+
+        const totalCell = row.querySelector('.table__total');
+        totalCell.textContent = total.toFixed(SCENARIO_DECIMALS) + ' / 40';
+        setState(totalCell, hit ? 'is-target' : pass ? 'is-pass' : 'is-fail', ['is-target', 'is-pass', 'is-fail']);
+
+        const status = row.querySelector('.status');
+        status.textContent = hit ? 'Hits Target' : pass ? 'Pass' : 'Fail';
+        setState(status, pass ? 'is-pass' : 'is-fail', ['is-pass', 'is-fail']);
+      });
+
+      announce('Required marks calculated for target of ' + v.target);
+    }
+
+    function reset() {
+      ['pt1', 'pt2', 'pa1', 'pa2', 'patt'].forEach((k) => {
+        fields[k].value = '';
+        fields[k].setAttribute('aria-invalid', 'false');
+      });
+      fields.ptarget.value = 30;
+      syncChips(30);
+
+      const bar = $('pAttBar');
+      if (bar) setBar(bar.querySelector('[data-fill]'), 0);
+      paintTiers('predict', 0);
+
+      out.hidden = true;
+      empty.hidden = false;
+      error.hidden = true;
+      fields.pt1.focus();
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const r = read();
+      if (r.invalid.length) {
+        error.hidden = false;
+        r.invalid[0].focus();
+        return;
+      }
+      error.hidden = true;
+      render(r.values);
+    });
+
+    $('predictReset').addEventListener('click', reset);
+    return { render, reset };
+  })();
+
+  /* ── 9. Module 3: SGPA & CGPA Studio Controller with Manual Credits ── */
+  const gpaStudio = (function () {
+    const btnModeSgpa = $('btn-mode-sgpa');
+    const btnModeCgpa = $('btn-mode-cgpa');
+    const sgpaView = $('sgpa-calculator-view');
+    const cgpaView = $('cgpa-calculator-view');
+    const courseContainer = $('course-rows-container');
+    const btnAddCourse = $('btn-add-course');
+    const btnClearCourses = $('btn-clear-courses');
+    const btnCalcSgpa = $('btn-calc-sgpa');
+    const btnCalcCgpa = $('btn-calc-cgpa');
+
+    const scoreDisplay = $('gpaScoreDisplay');
+    const typeLabel = $('gpaTypeLabel');
+    const creditsVal = $('gpaCreditsVal');
+    const pctVal = $('gpaPctVal');
+    const gpaEmoji = $('gpaEmoji');
+    const gpaTitle = $('gpaClassTitle');
+    const gpaDetail = $('gpaClassDetail');
+    const gpaGauge = $('svgGpaGauge');
+
+    const GAUGE_CIRC = 2 * Math.PI * 75; // ~471
+    if (gpaGauge) {
+      gpaGauge.style.strokeDasharray = GAUGE_CIRC;
+      gpaGauge.style.strokeDashoffset = GAUGE_CIRC;
+    }
+
+    function setGpaGauge(score) {
+      if (!gpaGauge) return;
+      const ratio = clamp(score / 10.0, 0, 1);
+      gpaGauge.style.strokeDashoffset = GAUGE_CIRC - (ratio * GAUGE_CIRC);
+      gpaGauge.style.stroke = score >= 8.0 ? '#10b981' : score >= 6.5 ? '#38bdf8' : score >= 5.0 ? '#f59e0b' : '#f43f5e';
+    }
+
+    function classifyGpa(gpa) {
+      if (gpa >= 8.0) {
+        return {
+          title: 'First Class with Distinction 🏆',
+          detail: 'Superb academic performance! Eligible for top honors and prime placements.',
+          emoji: '🌟'
+        };
+      } else if (gpa >= 6.5) {
+        return {
+          title: 'First Class Grade 🎖️',
+          detail: 'Strong consistent performance across all registered credit hours.',
+          emoji: '✨'
+        };
+      } else if (gpa >= 5.0) {
+        return {
+          title: 'Second Class Grade 📜',
+          detail: 'Satisfactory standing. Focus on high-credit subjects to elevate score.',
+          emoji: '📈'
+        };
+      } else {
+        return {
+          title: 'Standing at Risk ⚠️',
+          detail: 'Needs immediate academic recovery. Re-evaluation or remedial focus advised.',
+          emoji: '⚠️'
+        };
+      }
+    }
+
+    // Toggle between SGPA and CGPA sub-tabs
+    btnModeSgpa.addEventListener('click', () => {
+      btnModeSgpa.classList.add('is-active');
+      btnModeCgpa.classList.remove('is-active');
+      sgpaView.hidden = false;
+      cgpaView.hidden = true;
+      typeLabel.textContent = 'SEMESTER SGPA';
+    });
+
+    btnModeCgpa.addEventListener('click', () => {
+      btnModeCgpa.classList.add('is-active');
+      btnModeSgpa.classList.remove('is-active');
+      cgpaView.hidden = false;
+      sgpaView.hidden = true;
+      typeLabel.textContent = 'CUMULATIVE CGPA';
+    });
+
+    // Add Course Row (with editable manual credit input)
+    btnAddCourse.addEventListener('click', () => {
+      const row = document.createElement('div');
+      row.className = 'course-row';
+      row.innerHTML = `
+        <input type="text" class="course-input" placeholder="Course Name" value="Elective Subject" />
+        <input type="number" class="course-input manual-credit-field cr-val" value="3.0" min="0.5" max="15" step="0.5" placeholder="Credits" title="Manual Credits" />
+        <select class="course-select gr-val">
+          <option value="10">O (10)</option>
+          <option value="9" selected>A+ (9)</option>
+          <option value="8">A (8)</option>
+          <option value="7">B+ (7)</option>
+          <option value="6">B (6)</option>
+          <option value="5">C (5)</option>
+          <option value="0">F (0)</option>
+        </select>
+        <button type="button" class="btn-del-row" title="Remove Subject">&times;</button>
+      `;
+      courseContainer.appendChild(row);
+      bindDelete(row.querySelector('.btn-del-row'));
+    });
+
+    function bindDelete(btn) {
+      btn.addEventListener('click', () => {
+        if (courseContainer.children.length > 1) {
+          btn.closest('.course-row').remove();
+        }
+      });
+    }
+    courseContainer.querySelectorAll('.btn-del-row').forEach(bindDelete);
+
+    btnClearCourses.addEventListener('click', () => {
+      courseContainer.innerHTML = '';
+      btnAddCourse.click();
+    });
+
+    // Compute SGPA
+    btnCalcSgpa.addEventListener('click', () => {
+      let totalPts = 0;
+      let totalCr = 0;
+
+      courseContainer.querySelectorAll('.course-row').forEach((row) => {
+        const cr = parseFloat(row.querySelector('.cr-val').value) || 0;
+        const gr = parseFloat(row.querySelector('.gr-val').value) || 0;
+        totalPts += cr * gr;
+        totalCr += cr;
+      });
+
+      const sgpa = totalCr > 0 ? (totalPts / totalCr) : 0;
+      const pct = (sgpa - 0.75) * 10;
+
+      scoreDisplay.textContent = sgpa.toFixed(2);
+      creditsVal.textContent = totalCr.toFixed(1);
+      pctVal.textContent = Math.max(0, pct).toFixed(1) + '%';
+      setGpaGauge(sgpa);
+
+      const res = classifyGpa(sgpa);
+      gpaTitle.textContent = res.title;
+      gpaDetail.textContent = res.detail;
+      gpaEmoji.textContent = res.emoji;
+
+      if (sgpa >= 8.0) {
+        fxSuite.launchCelebration();
+      }
+    });
+
+    // Build 8-Semester Grid for CGPA with manual credits & toggles
+    const semGrid = $('sem-grid-container');
+    const defaultCr = [21.5, 21.5, 22.0, 22.0, 21.5, 21.5, 20.0, 10.0];
+    for (let i = 1; i <= 8; i++) {
+      const card = document.createElement('div');
+      card.className = 'sem-card';
+      card.innerHTML = `
+        <div class="sem-card-head">
+          <span>Semester ${i}</span>
+          <label class="sem-toggle-wrap">
+            <input type="checkbox" class="sem-include" checked />
+            <span>Include</span>
+          </label>
+        </div>
+        <div class="sem-fields">
+          <input type="number" class="course-input sem-sgpa" placeholder="SGPA" min="0" max="10" step="0.01" />
+          <input type="number" class="course-input sem-credits" placeholder="Credits" value="${defaultCr[i-1]}" min="0.5" max="35" step="0.5" />
+        </div>
+      `;
+      semGrid.appendChild(card);
+    }
+
+    // Compute CGPA
+    btnCalcCgpa.addEventListener('click', () => {
+      let sumPts = 0;
+      let sumCredits = 0;
+
+      semGrid.querySelectorAll('.sem-card').forEach((card) => {
+        const isIncluded = card.querySelector('.sem-include').checked;
+        const sgpa = parseFloat(card.querySelector('.sem-sgpa').value);
+        const cr = parseFloat(card.querySelector('.sem-credits').value) || 0;
+
+        if (isIncluded && !isNaN(sgpa) && sgpa > 0) {
+          sumPts += sgpa * cr;
+          sumCredits += cr;
+        }
+      });
+
+      const cgpa = sumCredits > 0 ? (sumPts / sumCredits) : 0;
+      const pct = (cgpa - 0.75) * 10;
+
+      scoreDisplay.textContent = cgpa.toFixed(2);
+      creditsVal.textContent = sumCredits.toFixed(1);
+      pctVal.textContent = Math.max(0, pct).toFixed(1) + '%';
+      setGpaGauge(cgpa);
+
+      const res = classifyGpa(cgpa);
+      gpaTitle.textContent = res.title;
+      gpaDetail.textContent = res.detail;
+      gpaEmoji.textContent = res.emoji;
+
+      if (cgpa >= 8.0) {
+        fxSuite.launchCelebration();
+      }
+    });
+
+    return { setGpaGauge };
+  })();
+
+  /* ── 10. Interactive FX Controller Dock Listeners ── */
+  $('btn-fx-shell').addEventListener('click', () => fxSuite.launchPeonyShell());
+  $('btn-fx-confetti').addEventListener('click', () => fxSuite.launchConfettiCannons());
+  $('btn-fx-stardust').addEventListener('click', () => {
+    fxSuite.sprayStardust(window.innerWidth / 2, window.innerHeight / 2, 45);
+  });
+  $('btn-fx-clear').addEventListener('click', () => fxSuite.clearAll());
+
+  /* ── 11. One-Click Quick Sample Filler ── */
+  $('btn-demo-data').addEventListener('click', () => {
+    // Calculator
+    $('t1').value = '25.5';
+    $('t2').value = '28.0';
+    $('a1').value = '9.0';
+    $('a2').value = '9.5';
+    $('att').value = '88.5';
+    $('att').dispatchEvent(new Event('input'));
+    calc.render({ t1: 25.5, t2: 28.0, a1: 9.0, a2: 9.5, att: 88.5 });
+
+    // Predictor
+    $('pt1').value = '24.0';
+    $('pa1').value = '8.5';
+    $('patt').value = '87.0';
+    $('patt').dispatchEvent(new Event('input'));
+
+    // Trigger SGPA calculation
+    $('btn-calc-sgpa').click();
+  });
+
+  /* ── 12. Dark Mode Switcher ── */
+  const toggle = $('themeToggle');
+  toggle.addEventListener('click', () => {
+    const active = toggle.classList.toggle('is-active');
+    toggle.setAttribute('aria-checked', String(active));
+    if (!active) {
+      document.documentElement.style.setProperty('--bg', '#020408');
+      document.documentElement.style.setProperty('--panel-bg', '#060b18');
+    } else {
+      document.documentElement.style.removeProperty('--bg');
+      document.documentElement.style.removeProperty('--panel-bg');
+    }
+  });
+
+  /* ── 13. Initialization Boot ── */
+  document.querySelectorAll('[data-att-input]').forEach(bindAttendanceInput);
+  initTabs();
+})();
+</script>
+</body>
+</html>
