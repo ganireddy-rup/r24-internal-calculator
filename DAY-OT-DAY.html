@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DAY TO DAY // DevTrack 2026 — Study Evaluation & Tracker</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS & FontAwesome & Chart.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            obsidian: {
+              950: '#030712',
+              900: '#070b14',
+              850: '#0b101c',
+              800: '#111827',
+              700: '#1f293d',
+            }
+          },
+          boxShadow: {
+            'glow-indigo': '0 0 35px -5px rgba(99, 102, 241, 0.4)',
+            'glow-cyan': '0 0 35px -5px rgba(6, 182, 212, 0.4)',
+            'glow-emerald': '0 0 35px -5px rgba(16, 185, 129, 0.4)',
+            'glow-amber': '0 0 35px -5px rgba(245, 158, 11, 0.35)',
+            'glass-card': '0 8px 32px 0 rgba(0, 0, 0, 0.45)',
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    /* Modern subtle scrollbar */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.6); }
+
+    /* Developer Dot Grid Pattern */
+    .bg-grid-mesh {
+      background-image: radial-gradient(rgba(148, 163, 184, 0.09) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .dark .bg-grid-mesh {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* 2026 Frosted Glass Panel */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+    }
+    .dark .glass-panel {
+      background: rgba(11, 16, 28, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .glass-card-interactive {
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .glass-card-interactive:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.35);
+      box-shadow: 0 12px 30px -4px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Badges */
+    .badge-study { background: rgba(14, 165, 233, 0.12); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.25); }
+    .dark .badge-study { background: rgba(14, 165, 233, 0.14); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.3); }
+
+    .badge-revision { background: rgba(245, 158, 11, 0.12); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.25); }
+    .dark .badge-revision { background: rgba(245, 158, 11, 0.14); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    .badge-practice { background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.25); }
+    .dark .badge-practice { background: rgba(16, 185, 129, 0.14); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    .badge-mock { background: rgba(168, 85, 247, 0.12); color: #7c3aed; border: 1px solid rgba(168, 85, 247, 0.25); }
+    .dark .badge-mock { background: rgba(168, 85, 247, 0.14); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      background: rgba(3, 7, 18, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* Tab view transitions */
+    .view-container {
+      animation: viewFadeSlide 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes viewFadeSlide {
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Ambient background gradient bubbles */
+    .ambient-glow {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 9999px;
+      filter: blur(120px);
+      opacity: 0.18;
+      transition: all 0.5s ease;
+    }
+    .dark .ambient-glow {
+      opacity: 0.14;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-[#030712] text-slate-900 dark:text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-300 bg-grid-mesh relative overflow-x-hidden">
+
+  <!-- Ambient background glow blobs for Linear/Raycast look -->
+  <div class="ambient-glow w-96 h-96 bg-indigo-600 top-0 left-1/4 -translate-y-1/2"></div>
+  <div class="ambient-glow w-96 h-96 bg-cyan-500 bottom-0 right-1/4 translate-y-1/2"></div>
+
+  <!-- Toast Notification System Container -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- APP WRAPPER -->
+  <div class="flex flex-1 min-h-screen overflow-hidden relative z-10">
+    
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="hidden md:flex flex-col w-72 border-r border-slate-200/80 dark:border-white/[0.08] bg-white/75 dark:bg-[#070b14]/85 backdrop-blur-2xl z-20 select-none">
+      
+      <!-- Brand Header -->
+      <div class="p-6 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="relative group">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 text-white flex items-center justify-center font-mono font-bold text-lg shadow-glow-indigo group-hover:scale-105 transition-transform">
+              <i class="fa-solid fa-layer-group text-sm"></i>
+            </div>
+            <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-[#070b14] rounded-full"></span>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h1 class="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white font-mono">DAY//TRACK</h1>
+              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/25 font-bold">2026</span>
+            </div>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 font-mono">APPSC Group 2 Engine</p>
+          </div>
+        </div>
+        
+        <!-- Dark Mode Toggle Button -->
+        <button onclick="toggleDarkMode()" aria-label="Toggle Theme" class="w-9 h-9 rounded-xl border border-slate-200/80 dark:border-white/[0.08] flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.05] transition-all active:scale-90">
+          <i id="themeIconDesktop" class="fa-solid fa-moon text-xs"></i>
+        </button>
+      </div>
+
+      <!-- Live Target Status Banner -->
+      <div class="px-5 pt-4">
+        <div class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/5 to-transparent border border-indigo-500/20 flex items-center justify-between text-xs">
+          <span class="flex items-center gap-2 text-indigo-600 dark:text-indigo-300 font-mono text-[11px] font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            SYS: READY
+          </span>
+          <span class="text-[10px] font-mono text-slate-400">APPSC-G2</span>
+        </div>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto font-medium text-sm">
+        <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-50/90 dark:bg-indigo-500/15 border border-indigo-200/60 dark:border-indigo-500/30 transition-all group font-mono text-xs" data-tab="dashboard">
+          <i class="fa-solid fa-chart-pie w-5 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="font-sans font-semibold text-sm">Dashboard</span>
+        </button>
+        <button onclick="switchTab('tasks')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.05] transition-all group border border-transparent font-mono text-xs" data-tab="tasks">
+          <i class="fa-solid fa-list-check w-5 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="font-sans font-semibold text-sm">Today's Tasks</span>
+        </button>
+        <button onclick="switchTab('calendar')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.05] transition-all group border border-transparent font-mono text-xs" data-tab="calendar">
+          <i class="fa-solid fa-calendar-days w-5 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="font-sans font-semibold text-sm">Calendar Grid</span>
+        </button>
+        <button onclick="switchTab('progress')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.05] transition-all group border border-transparent font-mono text-xs" data-tab="progress">
+          <i class="fa-solid fa-chart-line w-5 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="font-sans font-semibold text-sm">Analytics & Stats</span>
+        </button>
+        <button onclick="switchTab('evaluation')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.05] transition-all group border border-transparent font-mono text-xs" data-tab="evaluation">
+          <i class="fa-solid fa-clipboard-check w-5 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="font-sans font-semibold text-sm">Daily Review</span>
+        </button>
+        <button onclick="switchTab('settings')" class="nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.05] transition-all group border border-transparent font-mono text-xs" data-tab="settings">
+          <i class="fa-solid fa-sliders w-5 text-center group-hover:scale-110 transition-transform"></i>
+          <span class="font-sans font-semibold text-sm">Settings & Data</span>
+        </button>
+      </nav>
+
+      <!-- Bottom Quick Action -->
+      <div class="p-4 border-t border-slate-200/80 dark:border-white/[0.08]">
+        <button onclick="openAddTaskModal()" class="w-full relative group overflow-hidden rounded-2xl p-[1px] font-semibold text-xs transition-all shadow-glow-indigo active:scale-95">
+          <span class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 group-hover:opacity-100 transition-opacity"></span>
+          <span class="relative flex items-center justify-center gap-2 py-3 px-4 rounded-[15px] bg-indigo-600 dark:bg-[#0c121f] text-white group-hover:bg-opacity-80 transition-all font-mono">
+            <i class="fa-solid fa-plus text-[10px]"></i> + NEW_SESSION
+          </span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-y-auto pb-24 md:pb-8">
+      
+      <!-- TOP BAR MOBILE -->
+      <header class="md:hidden flex items-center justify-between p-4 glass-panel border-b border-slate-200/80 dark:border-white/[0.08] sticky top-0 z-20">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 text-white flex items-center justify-center font-bold text-sm shadow-glow-indigo">
+            <i class="fa-solid fa-layer-group text-xs"></i>
+          </div>
+          <div>
+            <h1 class="font-extrabold text-sm leading-tight text-slate-900 dark:text-white font-mono">DAY//TRACK</h1>
+            <span id="mobileDateHeader" class="text-[11px] text-slate-500 font-mono"></span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleDarkMode()" aria-label="Toggle Theme Mobile" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-white/10 text-slate-500 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-white/5 active:scale-90 transition">
+            <i id="themeIconMobile" class="fa-solid fa-moon text-xs"></i>
+          </button>
+          <button onclick="openAddTaskModal()" aria-label="Add Task Mobile" class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-glow-indigo active:scale-90 transition">
+            <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- IN-APP ALERT BANNER FOR OVERDUE TASKS -->
+      <div id="overdueAlertBanner" class="hidden m-4 md:m-6 mb-0 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-300 flex items-center justify-between gap-3 text-xs md:text-sm backdrop-blur-md shadow-sm">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-500 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <span class="font-bold">Overdue Alert:</span>
+            <span class="text-amber-700 dark:text-amber-200/90 ml-1">You have pending tasks that passed their planned end time!</span>
+          </div>
+        </div>
+        <button onclick="switchTab('tasks')" class="px-3.5 py-1.5 rounded-xl bg-amber-500 text-white font-semibold whitespace-nowrap hover:bg-amber-600 transition text-xs shadow-sm active:scale-95 font-mono">Review Now</button>
+      </div>
+
+      <!-- VIEW CONTAINERS -->
+      <div class="p-4 md:p-8 max-w-7xl mx-auto w-full space-y-6">
+
+        <!-- 1. DASHBOARD VIEW -->
+        <section id="view-dashboard" class="space-y-6 view-container">
+          
+          <!-- Header Banner -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">DEV_MODE: ACTIVE</span>
+                <span class="text-xs font-mono text-slate-400" id="currentFullDateDisplay"></span>
+              </div>
+              <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1" id="dashboardGreeting">Welcome, Aspirant</h2>
+            </div>
+            
+            <!-- Gamified Stats Badges -->
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-400/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-mono text-xs font-bold shadow-sm">
+                <i class="fa-solid fa-fire text-amber-500 animate-bounce"></i>
+                <span><span id="streakCount">0</span> DAY STREAK</span>
+              </div>
+              <div id="scoreBadge" class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-mono text-xs font-bold shadow-sm">
+                <i class="fa-solid fa-bolt text-indigo-500"></i>
+                <span>SCORE: <span id="performanceScore">0/100</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action: What to study right now -->
+          <div id="currentNextTaskCard" class="relative overflow-hidden rounded-3xl p-6 md:p-7 bg-gradient-to-br from-indigo-600 via-indigo-700 to-slate-950 text-white shadow-glow-indigo border border-indigo-400/30">
+            <div class="absolute -right-10 -bottom-10 w-60 h-60 rounded-full bg-cyan-400/10 blur-3xl pointer-events-none"></div>
+            <div class="absolute right-6 top-6 opacity-10 text-7xl font-mono select-none font-black">#EXECUTE</div>
+
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div class="space-y-2 max-w-2xl">
+                <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-[11px] font-mono tracking-wider uppercase text-indigo-200 border border-white/10">
+                  <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+                  Active Study Directive
+                </div>
+                <h3 id="currentTaskTitle" class="text-xl md:text-2xl font-bold tracking-tight text-white">No active task right now</h3>
+                <p id="currentTaskDetails" class="text-xs md:text-sm text-indigo-100/80 leading-relaxed">Plan your next session to keep the momentum high!</p>
+              </div>
+              
+              <div id="currentTaskActions" class="hidden flex items-center gap-3">
+                <button id="quickCompleteBtn" class="px-5 py-2.5 rounded-xl bg-white text-indigo-900 font-bold text-xs tracking-wide shadow-lg hover:bg-slate-100 active:scale-95 transition-all flex items-center gap-2 font-mono">
+                  <i class="fa-solid fa-check text-emerald-600"></i> MARK_DONE
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Metric Cards -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            
+            <div class="glass-panel glass-card-interactive p-4 md:p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-xs font-mono text-slate-500 dark:text-slate-400">
+                <span>COMPLETION_RATE</span>
+                <i class="fa-solid fa-circle-notch text-indigo-500"></i>
+              </div>
+              <div class="flex items-baseline justify-between mt-3">
+                <span class="text-xl md:text-2xl font-extrabold font-mono text-slate-900 dark:text-white" id="statCompleted">0 / 0</span>
+                <span class="text-xs font-mono font-bold text-emerald-500" id="statPercentage">0%</span>
+              </div>
+              <div class="w-full bg-slate-200/70 dark:bg-white/10 h-1.5 rounded-full mt-3 overflow-hidden">
+                <div id="statProgressBar" class="bg-gradient-to-r from-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="glass-panel glass-card-interactive p-4 md:p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-xs font-mono text-slate-500 dark:text-slate-400">
+                <span>PLANNED_TIME</span>
+                <i class="fa-regular fa-clock text-indigo-400"></i>
+              </div>
+              <div class="flex items-baseline justify-between mt-3">
+                <span class="text-xl md:text-2xl font-extrabold font-mono text-slate-900 dark:text-white" id="statPlannedTime">0h 0m</span>
+              </div>
+              <p class="text-[11px] font-mono text-slate-400 mt-2 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Daily Target
+              </p>
+            </div>
+
+            <div class="glass-panel glass-card-interactive p-4 md:p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-xs font-mono text-slate-500 dark:text-slate-400">
+                <span>ACTUAL_LOGGED</span>
+                <i class="fa-solid fa-hourglass-half text-cyan-400"></i>
+              </div>
+              <div class="flex items-baseline justify-between mt-3">
+                <span class="text-xl md:text-2xl font-extrabold font-mono text-indigo-600 dark:text-cyan-400" id="statActualTime">0h 0m</span>
+              </div>
+              <p class="text-[11px] font-mono text-slate-400 mt-2 truncate" id="actualTimeDiff">Verified completed tasks</p>
+            </div>
+
+            <div class="glass-panel glass-card-interactive p-4 md:p-5 rounded-2xl">
+              <div class="flex items-center justify-between text-xs font-mono text-slate-500 dark:text-slate-400">
+                <span>STATUS_LEVEL</span>
+                <i class="fa-solid fa-award text-amber-400"></i>
+              </div>
+              <div class="flex items-baseline justify-between mt-3">
+                <span class="text-base md:text-lg font-bold text-slate-900 dark:text-white" id="statDayStatus">Pending Plan</span>
+              </div>
+              <p class="text-[11px] font-mono text-slate-400 mt-2" id="statRescheduledCount">0 Rescheduled</p>
+            </div>
+
+          </div>
+
+          <!-- Today's Schedule and Milestones -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="lg:col-span-2 glass-panel p-6 rounded-3xl space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-200/70 dark:border-white/[0.08] pb-4">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-mono">
+                    <i class="fa-solid fa-terminal text-xs"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-sm md:text-base text-slate-900 dark:text-white font-mono">Today's Schedule Overview</h3>
+                    <p class="text-xs text-slate-500 font-mono">Real-time study queue</p>
+                  </div>
+                </div>
+                <button onclick="switchTab('tasks')" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 flex items-center gap-1 group">
+                  VIEW_ALL <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                </button>
+              </div>
+
+              <div id="dashboardTaskList" class="space-y-2.5">
+                <!-- dynamic task rows inserted here -->
+              </div>
+            </div>
+
+            <!-- Milestones & Badges Card -->
+            <div class="glass-panel p-6 rounded-3xl space-y-4 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center gap-2.5 border-b border-slate-200/70 dark:border-white/[0.08] pb-4">
+                  <div class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                    <i class="fa-solid fa-medal text-xs"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-sm md:text-base text-slate-900 dark:text-white font-mono">Milestones & Badges</h3>
+                    <p class="text-xs text-slate-500 font-mono">Achievements locked/unlocked</p>
+                  </div>
+                </div>
+                
+                <div id="badgesContainer" class="space-y-2.5 mt-4">
+                  <!-- Dynamic Badges -->
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-slate-200/70 dark:border-white/[0.08]">
+                <div class="p-3.5 rounded-2xl bg-indigo-500/5 dark:bg-white/[0.02] border border-indigo-500/10">
+                  <i class="fa-solid fa-quote-left text-xs text-indigo-400 mb-1 block"></i>
+                  <p class="text-xs italic text-slate-600 dark:text-slate-400 leading-relaxed font-serif" id="quoteBox">
+                    "Consistency is what transforms average into excellence."
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. TODAY'S TASKS VIEW -->
+        <section id="view-tasks" class="hidden space-y-6 view-container">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">QUEUE_MANAGER</span>
+              </div>
+              <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">Today's Tasks</h2>
+              <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">Complete, reschedule, or organize your study blocks.</p>
+            </div>
+            
+            <button onclick="openAddTaskModal()" class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-xl text-xs font-mono font-bold shadow-glow-indigo transition flex items-center gap-2 active:scale-95">
+              <i class="fa-solid fa-plus text-xs"></i> + CREATE_TASK
+            </button>
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-mono">
+            <button onclick="filterTasks('all')" class="task-filter-pill px-4 py-1.5 rounded-xl font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm transition" data-filter="all">ALL</button>
+            <button onclick="filterTasks('pending')" class="task-filter-pill px-4 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10 transition" data-filter="pending">PENDING</button>
+            <button onclick="filterTasks('completed')" class="task-filter-pill px-4 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10 transition" data-filter="completed">COMPLETED</button>
+            <button onclick="filterTasks('missed')" class="task-filter-pill px-4 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10 transition" data-filter="missed">MISSED</button>
+          </div>
+
+          <!-- Tasks List Container -->
+          <div id="tasksListMain" class="space-y-3">
+            <!-- Dynamic task items -->
+          </div>
+        </section>
+
+        <!-- 3. CALENDAR VIEW -->
+        <section id="view-calendar" class="hidden space-y-6 view-container">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">TIMELINE_MATRIX</span>
+              </div>
+              <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">Study Calendar</h2>
+              <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">Green (&gt;75%), Yellow (40-75%), Red (&lt;40% or Missed)</p>
+            </div>
+            
+            <div class="flex items-center gap-2 bg-slate-100 dark:bg-white/5 p-1 rounded-2xl border border-slate-200/80 dark:border-white/[0.08]">
+              <button onclick="changeCalMonth(-1)" aria-label="Previous Month" class="w-9 h-9 rounded-xl hover:bg-white dark:hover:bg-white/10 flex items-center justify-center text-slate-600 dark:text-slate-300 transition active:scale-90"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+              <span id="calMonthTitle" class="font-mono font-bold text-xs md:text-sm min-w-[130px] text-center text-slate-900 dark:text-white">Month Year</span>
+              <button onclick="changeCalMonth(1)" aria-label="Next Month" class="w-9 h-9 rounded-xl hover:bg-white dark:hover:bg-white/10 flex items-center justify-center text-slate-600 dark:text-slate-300 transition active:scale-90"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+            </div>
+          </div>
+
+          <div class="glass-panel p-6 rounded-3xl">
+            <div class="grid grid-cols-7 gap-2 text-center text-xs font-mono font-bold text-slate-400 mb-3 uppercase tracking-wider">
+              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div id="calendarGrid" class="grid grid-cols-7 gap-2">
+              <!-- Calendar days generated dynamically -->
+            </div>
+          </div>
+
+          <!-- Selected Day Info Modal or Container -->
+          <div id="calendarDayDetails" class="glass-panel p-6 rounded-3xl hidden transition-all">
+            <div class="flex items-center justify-between mb-3 border-b border-slate-200/70 dark:border-white/[0.08] pb-3">
+              <h3 class="font-bold text-sm md:text-base text-slate-900 dark:text-white font-mono" id="calSelectedDateHeader">Day Summary</h3>
+              <span class="text-[11px] font-mono text-indigo-500">DRILL_DOWN_LOG</span>
+            </div>
+            <div id="calSelectedDateBody" class="text-xs text-slate-600 dark:text-slate-400 space-y-2"></div>
+          </div>
+        </section>
+
+        <!-- 4. PROGRESS & STATS VIEW -->
+        <section id="view-progress" class="hidden space-y-6 view-container">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">ANALYTICS_CORE</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">Progress & Analytics</h2>
+            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">Weekly performance, study hours trends, and APPSC syllabus coverage.</p>
+          </div>
+
+          <!-- Weekly Overview 3-Card Deck -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="glass-panel glass-card-interactive p-5 rounded-2xl">
+              <span class="text-xs font-mono text-slate-500 dark:text-slate-400">TOTAL_HOURS_WEEK</span>
+              <p class="text-2xl md:text-3xl font-extrabold font-mono mt-1 text-indigo-600 dark:text-indigo-400" id="weeklyTotalHours">0 hrs</p>
+              <p class="text-[11px] font-mono text-slate-400 mt-1">Average <span id="weeklyAvgDailyHours" class="font-bold text-slate-700 dark:text-slate-200">0 hrs</span> / day</p>
+            </div>
+
+            <div class="glass-panel glass-card-interactive p-5 rounded-2xl">
+              <span class="text-xs font-mono text-slate-500 dark:text-slate-400">COMPLETION_RATE</span>
+              <p class="text-2xl md:text-3xl font-extrabold font-mono mt-1 text-emerald-600 dark:text-emerald-400" id="weeklyCompletionPct">0%</p>
+              <p class="text-[11px] font-mono text-slate-400 mt-1"><span id="weeklyCompletedTasksCount" class="font-bold text-emerald-500">0</span> done, <span id="weeklyMissedTasksCount" class="font-bold text-rose-500">0</span> missed</p>
+            </div>
+
+            <div class="glass-panel glass-card-interactive p-5 rounded-2xl">
+              <span class="text-xs font-mono text-slate-500 dark:text-slate-400">PEAK_PERFORMANCE_DAY</span>
+              <p class="text-2xl md:text-3xl font-extrabold font-mono mt-1 text-amber-500" id="weeklyBestDay">-</p>
+              <p class="text-[11px] font-mono text-slate-400 mt-1">Low Activity: <span id="weeklyWeakDay" class="font-bold text-slate-700 dark:text-slate-300">-</span></p>
+            </div>
+          </div>
+
+          <!-- Charts Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-panel p-6 rounded-3xl space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-200/70 dark:border-white/[0.08] pb-3">
+                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 font-mono">Daily Study Hours (Last 7 Days)</h3>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400">HISTOGRAM</span>
+              </div>
+              <div class="h-64 relative">
+                <canvas id="hoursChart"></canvas>
+              </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-3xl space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-200/70 dark:border-white/[0.08] pb-3">
+                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200 font-mono">Subject Distribution (Hours)</h3>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400">DONUT_METRIC</span>
+              </div>
+              <div class="h-64 flex items-center justify-center relative">
+                <canvas id="subjectPieChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- APPSC Group 2 Subject Coverage Progress Tracker -->
+          <div class="glass-panel p-6 rounded-3xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200/70 dark:border-white/[0.08] pb-4">
+              <div>
+                <h3 class="font-bold text-base text-slate-900 dark:text-white font-mono">APPSC Group 2 Subject Coverage</h3>
+                <p class="text-xs text-slate-500">Track tasks and hours logged per subject</p>
+              </div>
+              <button onclick="switchTab('settings')" class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 hover:underline">MANAGE_SUBJECTS &rarr;</button>
+            </div>
+            <div id="subjectBreakdownGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. DAILY EVALUATION & SELF-REFLECTION VIEW -->
+        <section id="view-evaluation" class="hidden space-y-6 view-container">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">POST_MORTEM // AUDIT</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">Daily Self-Evaluation</h2>
+            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">Honest daily introspection turns preparation into selection.</p>
+          </div>
+
+          <!-- Automatic Day Audit Card -->
+          <div class="glass-panel p-6 rounded-3xl space-y-3">
+            <h3 class="font-bold text-sm font-mono text-slate-800 dark:text-slate-200">Today's Computed Summary</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+              <div class="p-4 rounded-2xl bg-slate-100 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/5">
+                <span class="text-[11px] font-mono text-slate-400">TOTAL_PLANNED</span>
+                <p class="text-lg font-mono font-bold text-slate-900 dark:text-slate-100 mt-1" id="evalPlannedCount">0 tasks</p>
+              </div>
+              <div class="p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/20">
+                <span class="text-[11px] font-mono text-emerald-600 dark:text-emerald-400">COMPLETED</span>
+                <p class="text-lg font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1" id="evalCompletedCount">0</p>
+              </div>
+              <div class="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20">
+                <span class="text-[11px] font-mono text-amber-600 dark:text-amber-400">RESCHEDULED</span>
+                <p class="text-lg font-mono font-bold text-amber-600 dark:text-amber-400 mt-1" id="evalRescheduledCount">0</p>
+              </div>
+              <div class="p-4 rounded-2xl bg-rose-500/5 dark:bg-rose-500/10 border border-rose-500/20">
+                <span class="text-[11px] font-mono text-rose-600 dark:text-rose-400">MISSED</span>
+                <p class="text-lg font-mono font-bold text-rose-600 dark:text-rose-400 mt-1" id="evalMissedCount">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6-Question Self-Evaluation Form -->
+          <div class="glass-panel p-6 md:p-8 rounded-3xl space-y-6">
+            <div class="flex items-center gap-2.5 border-b border-slate-200/70 dark:border-white/[0.08] pb-4">
+              <div class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center font-mono">
+                <i class="fa-solid fa-code-commit text-xs"></i>
+              </div>
+              <h3 class="font-bold text-base text-slate-900 dark:text-white font-mono">Daily Self-Assessment Form</h3>
+            </div>
+            
+            <form id="dailySelfEvalForm" onsubmit="saveDailySelfEval(event)" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono">1. Actual Study Hours Logged</label>
+                  <input type="number" step="0.25" min="0" max="24" id="evalHoursInput" class="w-full text-xs md:text-sm px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="e.g. 6.5" required>
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono">2. Topics Completed Today</label>
+                  <input type="text" id="evalTopicsCompletedInput" class="w-full text-xs md:text-sm px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="e.g. Fundamental Rights (Polity), Vedic Age (History)" required>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono">3. What topics were difficult or need revision?</label>
+                <input type="text" id="evalDifficultTopicsInput" class="w-full text-xs md:text-sm px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="e.g. Budget numericals, 73rd Constitutional Amendment articles">
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono">4. How many questions did you practice?</label>
+                  <input type="number" min="0" id="evalQuestionsPracticedInput" class="w-full text-xs md:text-sm px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="e.g. 50">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono">5. How many questions did you get correct?</label>
+                  <input type="number" min="0" id="evalQuestionsCorrectInput" class="w-full text-xs md:text-sm px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" placeholder="e.g. 42">
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono">6. What should you improve tomorrow?</label>
+                <textarea id="evalImprovementInput" rows="2" class="w-full text-xs md:text-sm px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition leading-relaxed" placeholder="e.g. Reduce phone distractions, start Indian Economy at 8 AM sharp."></textarea>
+              </div>
+
+              <div class="flex justify-end pt-2">
+                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs md:text-sm font-mono font-bold rounded-xl shadow-glow-indigo transition flex items-center gap-2 active:scale-95">
+                  <i class="fa-solid fa-floppy-disk"></i> COMMIT_EVALUATION
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Past Evaluations Log -->
+          <div class="glass-panel p-6 rounded-3xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200/70 dark:border-white/[0.08] pb-4">
+              <h3 class="font-bold text-sm md:text-base text-slate-900 dark:text-white font-mono">Evaluation History Log</h3>
+              <span class="text-xs text-slate-400 font-mono">PAST_COMMITS</span>
+            </div>
+            <div id="evalHistoryContainer" class="space-y-3">
+              <!-- Dynamic review entries -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. SETTINGS VIEW -->
+        <section id="view-settings" class="hidden space-y-6 view-container">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">CONFIG & STORAGE</span>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-1">Settings & Data Management</h2>
+            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">Manage syllabus subjects, backup data, and customize preferences.</p>
+          </div>
+
+          <!-- Subject Management -->
+          <div class="glass-panel p-6 rounded-3xl space-y-4">
+            <h3 class="font-bold text-sm md:text-base text-slate-900 dark:text-white font-mono">APPSC Subjects & Custom Modules</h3>
+            <div class="flex gap-2">
+              <input type="text" id="newSubjectInput" placeholder="Add custom subject (e.g. AP Reorganisation Act)" class="flex-1 text-xs md:text-sm px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <button onclick="addCustomSubject()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-mono font-bold rounded-xl shadow-sm transition active:scale-95">+ ADD</button>
+            </div>
+            <div id="subjectsTagList" class="flex flex-wrap gap-2 pt-2">
+              <!-- Rendered badges -->
+            </div>
+          </div>
+
+          <!-- Backup & Restore -->
+          <div class="glass-panel p-6 rounded-3xl space-y-4">
+            <h3 class="font-bold text-sm md:text-base text-slate-900 dark:text-white font-mono">Data Persistence Engine (JSON)</h3>
+            <p class="text-xs text-slate-500">Export your entire preparation history to keep it safe or import to another device.</p>
+            <div class="flex flex-wrap gap-3">
+              <button onclick="exportDataJSON()" class="px-4 py-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-mono font-bold flex items-center gap-2 border border-slate-200 dark:border-white/10 transition active:scale-95">
+                <i class="fa-solid fa-download text-indigo-400"></i> EXPORT_JSON_BACKUP
+              </button>
+              <label class="px-4 py-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-mono font-bold flex items-center gap-2 border border-slate-200 dark:border-white/10 cursor-pointer transition active:scale-95">
+                <i class="fa-solid fa-upload text-emerald-400"></i> RESTORE_FROM_JSON
+                <input type="file" id="importJsonFileInput" class="hidden" accept=".json" onchange="importDataJSON(event)">
+              </label>
+              <button onclick="resetAppDemoData()" class="px-4 py-2.5 bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 rounded-xl text-xs font-mono font-bold transition active:scale-95">
+                LOAD_SAMPLE_APPSC_SCHEDULE
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- BOTTOM MOBILE NAVIGATION BAR -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-slate-200/80 dark:border-white/[0.08] flex justify-around items-center py-2 px-3 z-30 shadow-2xl">
+    <button onclick="switchTab('dashboard')" class="mobile-nav-btn flex flex-col items-center gap-1 text-indigo-600 dark:text-indigo-400 p-1 w-14 transition" data-tab="dashboard">
+      <i class="fa-solid fa-chart-pie text-sm"></i>
+      <span class="text-[10px] font-mono font-medium">Home</span>
+    </button>
+    <button onclick="switchTab('tasks')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 p-1 w-14 transition" data-tab="tasks">
+      <i class="fa-solid fa-list-check text-sm"></i>
+      <span class="text-[10px] font-mono font-medium">Tasks</span>
+    </button>
+    <button onclick="openAddTaskModal()" aria-label="Quick Add Task" class="flex flex-col items-center justify-center bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white rounded-2xl w-12 h-12 -mt-5 shadow-glow-indigo active:scale-90 transition">
+      <i class="fa-solid fa-plus text-base"></i>
+    </button>
+    <button onclick="switchTab('calendar')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 p-1 w-14 transition" data-tab="calendar">
+      <i class="fa-solid fa-calendar-days text-sm"></i>
+      <span class="text-[10px] font-mono font-medium">Cal</span>
+    </button>
+    <button onclick="switchTab('evaluation')" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400 p-1 w-14 transition" data-tab="evaluation">
+      <i class="fa-solid fa-clipboard-check text-sm"></i>
+      <span class="text-[10px] font-mono font-medium">Review</span>
+    </button>
+  </nav>
+
+  <!-- ======================== MODALS ======================== -->
+
+  <!-- ADD / EDIT TASK MODAL -->
+  <div id="taskModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-white dark:bg-[#0c121f] rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-200 dark:border-white/[0.08] max-h-[90vh] flex flex-col transition-all">
+      <div class="px-6 py-4 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+          <h3 id="taskModalTitle" class="font-bold text-base text-slate-900 dark:text-white font-mono">Create New Task</h3>
+        </div>
+        <button onclick="closeTaskModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-slate-600 dark:hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="taskForm" onsubmit="handleTaskFormSubmit(event)" class="p-6 overflow-y-auto space-y-4 text-xs md:text-sm flex-1">
+        <input type="hidden" id="taskFormId">
+
+        <!-- Subject Selection -->
+        <div>
+          <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Subject Module</label>
+          <select id="taskSubject" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+            <!-- Dynamic subjects -->
+          </select>
+        </div>
+
+        <!-- Topic -->
+        <div>
+          <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Topic / Chapter Scope</label>
+          <input type="text" id="taskTopic" placeholder="e.g. Fundamental Rights Articles 12-35" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        </div>
+
+        <!-- Target Type & Priority -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Target Type</label>
+            <select id="taskType" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="Study">Study (Concept)</option>
+              <option value="Revision">Revision</option>
+              <option value="Practice">Practice (MCQs)</option>
+              <option value="Mock Test">Mock Test</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Priority</label>
+            <select id="taskPriority" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="High">High 🔴</option>
+              <option value="Medium" selected>Medium 🟡</option>
+              <option value="Low">Low 🟢</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Date & Times -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Date</label>
+            <input type="date" id="taskDate" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Start Time</label>
+            <input type="time" id="taskStartTime" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">End Time</label>
+            <input type="time" id="taskEndTime" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          </div>
+        </div>
+
+        <!-- Planned Duration & Question Target -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Duration (mins)</label>
+            <input type="number" id="taskDuration" min="10" step="5" placeholder="e.g. 120" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Target MCQs / Pages</label>
+            <input type="number" id="taskQuestionsTarget" min="0" placeholder="e.g. 50" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <!-- Recurring Pattern -->
+        <div id="recurringFieldContainer">
+          <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Recurring Schedule</label>
+          <select id="taskRecurring" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="none">Does not repeat</option>
+            <option value="daily">Every day (7 days)</option>
+            <option value="weekdays">Weekdays (Mon-Fri)</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+
+        <!-- Notes -->
+        <div>
+          <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Notes / Material References</label>
+          <textarea id="taskNotes" rows="2" placeholder="e.g. Standard Laxmikanth Chapter 7 notes" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <!-- Conflict Alert inside Modal -->
+        <div id="modalConflictAlert" class="hidden p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-mono"></div>
+
+        <div class="pt-4 border-t border-slate-200/80 dark:border-white/[0.08] flex justify-end gap-2.5">
+          <button type="button" onclick="closeTaskModal()" class="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 font-mono text-xs font-semibold hover:bg-slate-100 dark:hover:bg-white/5 transition">CANCEL</button>
+          <button type="submit" id="saveTaskSubmitBtn" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-mono text-xs font-bold rounded-xl shadow-glow-indigo transition active:scale-95">COMMIT_TASK</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RESCHEDULE MODAL -->
+  <div id="rescheduleModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-white dark:bg-[#0c121f] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 dark:border-white/[0.08]">
+      <div class="px-6 py-4 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between">
+        <h3 class="font-bold text-base text-slate-900 dark:text-white font-mono flex items-center gap-2">
+          <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i> Reschedule Task
+        </h3>
+        <button onclick="closeRescheduleModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="p-6 space-y-4 text-xs md:text-sm">
+        <input type="hidden" id="rescheduleTaskId">
+        
+        <div class="p-3.5 bg-slate-50 dark:bg-white/[0.03] rounded-2xl border border-slate-200/70 dark:border-white/5">
+          <span class="text-[10px] font-mono text-slate-400 block uppercase">Original Schedule</span>
+          <p id="rescheduleOriginalDisplay" class="font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug"></p>
+        </div>
+
+        <!-- Quick Reschedule Presets -->
+        <div>
+          <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Quick Presets</label>
+          <div class="grid grid-cols-2 gap-2 font-mono">
+            <button onclick="applyQuickReschedule('later_today')" class="px-3 py-2 bg-slate-100 dark:bg-white/5 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl font-medium text-slate-700 dark:text-slate-300 text-left border border-slate-200 dark:border-white/10 transition text-xs">
+              ⚡ Later Today (+2h)
+            </button>
+            <button onclick="applyQuickReschedule('tomorrow_9am')" class="px-3 py-2 bg-slate-100 dark:bg-white/5 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl font-medium text-slate-700 dark:text-slate-300 text-left border border-slate-200 dark:border-white/10 transition text-xs">
+              🌅 Tomorrow 9:00 AM
+            </button>
+            <button onclick="applyQuickReschedule('tomorrow_7pm')" class="px-3 py-2 bg-slate-100 dark:bg-white/5 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl font-medium text-slate-700 dark:text-slate-300 text-left border border-slate-200 dark:border-white/10 transition text-xs">
+              🌆 Tomorrow 7:00 PM
+            </button>
+            <button onclick="applyQuickReschedule('weekend')" class="px-3 py-2 bg-slate-100 dark:bg-white/5 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-xl font-medium text-slate-700 dark:text-slate-300 text-left border border-slate-200 dark:border-white/10 transition text-xs">
+              📅 Weekend Shift
+            </button>
+          </div>
+        </div>
+
+        <!-- Custom Date & Time Fields -->
+        <div class="space-y-3 pt-2 border-t border-slate-200/80 dark:border-white/[0.08]">
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">New Target Date</label>
+            <input type="date" id="rescheduleNewDate" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Start Time</label>
+              <input type="time" id="rescheduleNewStartTime" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 font-mono">
+            </div>
+            <div>
+              <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">End Time</label>
+              <input type="time" id="rescheduleNewEndTime" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 font-mono">
+            </div>
+          </div>
+          <div>
+            <label class="block font-semibold mb-1 text-slate-700 dark:text-slate-300 font-mono text-xs">Reason for rescheduling (Optional)</label>
+            <input type="text" id="rescheduleReason" placeholder="e.g. Urgent work, fatigue, mock review took longer" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-900/90 text-slate-900 dark:text-slate-100">
+          </div>
+        </div>
+
+        <!-- Conflict Message in Reschedule -->
+        <div id="rescheduleConflictWarning" class="hidden p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-mono">
+          ⚠️ Warning: You already have another task scheduled during this timeframe.
+        </div>
+
+        <div class="pt-3 border-t border-slate-200/80 dark:border-white/[0.08] flex justify-end gap-2.5">
+          <button onclick="closeRescheduleModal()" class="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl font-mono text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5">CANCEL</button>
+          <button onclick="submitReschedule(false)" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-mono text-xs font-bold rounded-xl shadow-glow-indigo transition">APPLY_SHIFT</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MISSED TASK ACTION MODAL -->
+  <div id="missedActionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-white dark:bg-[#0c121f] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 dark:border-white/[0.08] p-6 space-y-4 text-xs md:text-sm">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-lg flex-shrink-0 border border-amber-500/20">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-base text-slate-900 dark:text-white font-mono">Scheduled Time Elapsed</h3>
+          <p class="text-xs text-slate-500 mt-0.5 leading-relaxed" id="missedModalTaskInfo">You missed this scheduled task. What would you like to do?</p>
+        </div>
+      </div>
+
+      <div class="space-y-2 pt-2 font-mono">
+        <button onclick="handleMissedResolution('complete')" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-check"></i> COMPLETE_NOW (Record time)
+        </button>
+        <button onclick="handleMissedResolution('reschedule')" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-calendar-plus"></i> RESCHEDULE_TASK
+        </button>
+        <button onclick="handleMissedResolution('missed')" class="w-full py-2.5 px-4 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 rounded-xl font-semibold flex items-center justify-center gap-2 transition active:scale-95">
+          <i class="fa-solid fa-xmark text-rose-500"></i> KEEP_AS_MISSED
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASK HISTORY AUDIT LOG MODAL -->
+  <div id="historyModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-white dark:bg-[#0c121f] rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 dark:border-white/[0.08] max-h-[85vh] flex flex-col">
+      <div class="px-6 py-4 border-b border-slate-200/80 dark:border-white/[0.08] flex items-center justify-between">
+        <h3 class="font-bold text-base text-slate-900 dark:text-white font-mono flex items-center gap-2" id="historyModalTitle">
+          <i class="fa-solid fa-list-ol text-indigo-400"></i> Task History
+        </h3>
+        <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-3 flex-1 text-xs md:text-sm font-mono" id="historyTimelineList">
+        <!-- Rendered history audit items -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE MODAL -->
+  <div id="deleteConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden">
+    <div class="bg-white dark:bg-[#0c121f] rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-200 dark:border-white/[0.08] p-6 space-y-4 text-center">
+      <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 mx-auto flex items-center justify-center text-xl">
+        <i class="fa-solid fa-trash-can"></i>
+      </div>
+      <div>
+        <h4 class="font-bold text-base text-slate-900 dark:text-white font-mono">DELETE_CONFIRMATION</h4>
+        <p class="text-xs text-slate-500 mt-1 leading-relaxed">This action cannot be undone. Its history and verified time records will be permanently purged.</p>
+      </div>
+      <div class="flex justify-center gap-2.5 pt-2 font-mono">
+        <button onclick="closeDeleteModal()" class="px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 transition">CANCEL</button>
+        <button id="confirmDeleteBtn" class="px-5 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold shadow-sm transition">PURGE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC (JS) -->
+  <script>
+    // DEFAULT APPSC GROUP 2 SUBJECTS
+    const DEFAULT_SUBJECTS = [
+      "Indian History",
+      "Andhra Pradesh History",
+      "Indian Polity",
+      "Geography",
+      "Indian & AP Economy",
+      "Science & Technology",
+      "Indian Society",
+      "Reasoning",
+      "Quantitative Aptitude",
+      "English",
+      "Current Affairs"
+    ];
+
+    // INSPIRING MOTIVATIONAL QUOTES
+    const STUDY_QUOTES = [
+      "\"Success in competitive exams is the sum of small daily efforts repeated consistently.\"",
+      "\"Focus on understanding concepts today, so revision becomes effortless tomorrow.\"",
+      "\"Small disciplines repeated with consistency every day lead to great achievements.\"",
+      "\"Every chapter you master is one step closer to your APPSC Group 2 dream post.\"",
+      "\"Accuracy in practice questions is built on deep subject clarity.\""
+    ];
+
+    // APP STATE
+    let state = {
+      tasks: [],
+      evaluations: {},
+      subjects: [...DEFAULT_SUBJECTS],
+      currentFilter: 'all',
+      activeTab: 'dashboard',
+      calViewYear: new Date().getFullYear(),
+      calViewMonth: new Date().getMonth(),
+      taskPendingActionId: null,
+      taskToDeleteId: null
+    };
+
+    let hoursChartInstance = null;
+    let subjectPieChartInstance = null;
+
+    // TOAST SYSTEM
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      const colors = {
+        success: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
+        info: 'border-indigo-500/30 bg-indigo-500/10 text-indigo-400',
+        warning: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
+        error: 'border-rose-500/30 bg-rose-500/10 text-rose-400'
+      }[type] || 'border-indigo-500/30 bg-indigo-500/10 text-indigo-400';
+
+      const icons = {
+        success: 'fa-check',
+        info: 'fa-circle-info',
+        warning: 'fa-triangle-exclamation',
+        error: 'fa-circle-xmark'
+      }[type] || 'fa-bell';
+
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-2.5 rounded-xl border ${colors} backdrop-blur-xl shadow-glass-card text-xs font-mono transform transition-all duration-300 opacity-0 translate-y-2`;
+      toast.innerHTML = `<i class="fa-solid ${icons}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // INIT
+    document.addEventListener("DOMContentLoaded", () => {
+      loadStorageData();
+      applyThemePreference();
+      updateDatesDisplay();
+      populateSubjectDropdowns();
+      renderAllViews();
+
+      setInterval(checkOverdueTasks, 60000);
+      checkOverdueTasks();
+    });
+
+    // LOCAL STORAGE MANAGEMENT
+    function loadStorageData() {
+      const storedTasks = localStorage.getItem("appsc_tasks");
+      const storedEvals = localStorage.getItem("appsc_evaluations");
+      const storedSubjects = localStorage.getItem("appsc_subjects");
+
+      if (storedTasks) state.tasks = JSON.parse(storedTasks);
+      if (storedEvals) state.evaluations = JSON.parse(storedEvals);
+      if (storedSubjects) state.subjects = JSON.parse(storedSubjects);
+
+      if (state.tasks.length === 0) {
+        seedSampleTasks();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem("appsc_tasks", JSON.stringify(state.tasks));
+      localStorage.setItem("appsc_evaluations", JSON.stringify(state.evaluations));
+      localStorage.setItem("appsc_subjects", JSON.stringify(state.subjects));
+    }
+
+    // THEME HANDLING (Light / Dark)
+    function toggleDarkMode() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('appsc_theme', isDark ? 'dark' : 'light');
+      updateThemeIcons(isDark);
+      refreshCharts();
+      showToast(isDark ? 'Dark theme enabled' : 'Light theme enabled', 'info');
+    }
+
+    function applyThemePreference() {
+      const savedTheme = localStorage.getItem('appsc_theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const enableDark = savedTheme ? savedTheme === 'dark' : true;
+      if (enableDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      updateThemeIcons(enableDark);
+    }
+
+    function updateThemeIcons(isDark) {
+      const icon = isDark ? 'fa-sun' : 'fa-moon';
+      const dIcon = document.getElementById('themeIconDesktop');
+      const mIcon = document.getElementById('themeIconMobile');
+      if (dIcon) dIcon.className = `fa-solid ${icon} text-xs`;
+      if (mIcon) mIcon.className = `fa-solid ${icon} text-xs`;
+    }
+
+    // DATE HELPERS
+    function getTodayString() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function formatDateFriendly(dateStr) {
+      if (!dateStr) return '';
+      const [y, m, d] = dateStr.split('-');
+      const date = new Date(y, m - 1, d);
+      return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function updateDatesDisplay() {
+      const today = new Date();
+      const formatted = today.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+      const fullDisplay = document.getElementById('currentFullDateDisplay');
+      const mobileHeader = document.getElementById('mobileDateHeader');
+      if (fullDisplay) fullDisplay.textContent = formatted;
+      if (mobileHeader) mobileHeader.textContent = formatted;
+
+      const quoteEl = document.getElementById('quoteBox');
+      if (quoteEl) {
+        quoteEl.textContent = STUDY_QUOTES[Math.floor(Math.random() * STUDY_QUOTES.length)];
+      }
+    }
+
+    // NAVIGATION
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+
+      ['dashboard', 'tasks', 'calendar', 'progress', 'evaluation', 'settings'].forEach(id => {
+        const el = document.getElementById(`view-${id}`);
+        if (el) el.classList.add('hidden');
+      });
+
+      const target = document.getElementById(`view-${tabId}`);
+      if (target) {
+        target.classList.remove('hidden');
+      }
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        const isActive = btn.dataset.tab === tabId;
+        if (isActive) {
+          btn.className = "nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-indigo-600 dark:text-indigo-400 bg-indigo-50/90 dark:bg-indigo-500/15 border border-indigo-200/60 dark:border-indigo-500/30 transition-all group font-mono text-xs";
+        } else {
+          btn.className = "nav-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-white/[0.05] transition-all group border border-transparent font-mono text-xs";
+        }
+      });
+
+      document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+        const isActive = btn.dataset.tab === tabId;
+        btn.classList.toggle('text-indigo-600', isActive);
+        btn.classList.toggle('dark:text-indigo-400', isActive);
+        btn.classList.toggle('text-slate-400', !isActive);
+      });
+
+      if (tabId === 'calendar') renderCalendar();
+      if (tabId === 'progress') renderProgressAndCharts();
+      if (tabId === 'tasks') renderTaskList();
+      if (tabId === 'dashboard') renderDashboard();
+      if (tabId === 'evaluation') renderEvaluationTab();
+      if (tabId === 'settings') renderSettingsTab();
+    }
+
+    // SUBJECTS POPULATION
+    function populateSubjectDropdowns() {
+      const select = document.getElementById('taskSubject');
+      if (!select) return;
+      select.innerHTML = state.subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+    }
+
+    function renderSettingsTab() {
+      const listEl = document.getElementById('subjectsTagList');
+      if (!listEl) return;
+      listEl.innerHTML = state.subjects.map((s, idx) => `
+        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-slate-100 dark:bg-white/5 text-slate-800 dark:text-slate-200 text-xs font-mono rounded-xl border border-slate-200/80 dark:border-white/[0.08] shadow-sm">
+          <span>${s}</span>
+          ${state.subjects.length > 1 ? `<button onclick="removeSubject(${idx})" class="text-slate-400 hover:text-rose-500 transition"><i class="fa-solid fa-xmark text-[11px]"></i></button>` : ''}
+        </span>
+      `).join('');
+    }
+
+    function addCustomSubject() {
+      const input = document.getElementById('newSubjectInput');
+      const val = input.value.trim();
+      if (!val) return;
+      if (!state.subjects.includes(val)) {
+        state.subjects.push(val);
+        saveState();
+        populateSubjectDropdowns();
+        renderSettingsTab();
+        input.value = '';
+        showToast(`Subject "${val}" registered`, 'success');
+      }
+    }
+
+    function removeSubject(index) {
+      const removed = state.subjects.splice(index, 1);
+      saveState();
+      populateSubjectDropdowns();
+      renderSettingsTab();
+      showToast(`Subject "${removed[0]}" removed`, 'info');
+    }
+
+    // CHECK OVERDUE TASKS
+    function checkOverdueTasks() {
+      const today = getTodayString();
+      const now = new Date();
+      const currentHours = now.getHours().toString().padStart(2, '0');
+      const currentMinutes = now.getMinutes().toString().padStart(2, '0');
+      const currentTimeStr = `${currentHours}:${currentMinutes}`;
+
+      let hasOverdue = false;
+
+      state.tasks.forEach(task => {
+        if (task.date === today && task.status === 'Pending') {
+          if (task.endTime && currentTimeStr > task.endTime) {
+            hasOverdue = true;
+          }
+        } else if (task.date < today && task.status === 'Pending') {
+          hasOverdue = true;
+        }
+      });
+
+      const alertBanner = document.getElementById('overdueAlertBanner');
+      if (alertBanner) {
+        alertBanner.classList.toggle('hidden', !hasOverdue);
+      }
+    }
+
+    // DASHBOARD COMPUTATION & RENDERING
+    function renderDashboard() {
+      const today = getTodayString();
+      const todayTasks = state.tasks.filter(t => t.date === today);
+
+      const completed = todayTasks.filter(t => t.status === 'Completed').length;
+      const total = todayTasks.length;
+      const missed = todayTasks.filter(t => t.status === 'Missed').length;
+      const rescheduledCount = todayTasks.filter(t => t.rescheduledFrom).length;
+      const pct = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+      let plannedMinutes = 0;
+      todayTasks.forEach(t => plannedMinutes += Number(t.duration || 0));
+
+      let actualMinutes = 0;
+      todayTasks.forEach(t => {
+        if (t.status === 'Completed') {
+          actualMinutes += Number(t.actualDuration || t.duration || 0);
+        }
+      });
+
+      document.getElementById('statCompleted').textContent = `${completed} / ${total}`;
+      document.getElementById('statPercentage').textContent = `${pct}%`;
+      document.getElementById('statProgressBar').style.width = `${pct}%`;
+
+      document.getElementById('statPlannedTime').textContent = formatMinsToHours(plannedMinutes);
+      document.getElementById('statActualTime').textContent = formatMinsToHours(actualMinutes);
+      document.getElementById('statRescheduledCount').textContent = `${rescheduledCount} Rescheduled, ${missed} Missed`;
+
+      let statusWord = 'Pending Plan';
+      let score = 0;
+      if (total > 0) {
+        score = Math.min(100, Math.round((pct * 0.7) + (Math.min(actualMinutes, plannedMinutes) / (plannedMinutes || 1) * 30)));
+        if (pct >= 85) statusWord = 'Excellent 🌟';
+        else if (pct >= 65) statusWord = 'Good 👍';
+        else if (pct >= 40) statusWord = 'Average ⚖️';
+        else statusWord = 'Needs Attention 🌱';
+      }
+      document.getElementById('statDayStatus').textContent = statusWord;
+      document.getElementById('performanceScore').textContent = `${score}/100`;
+
+      const streak = computeDailyStreak();
+      document.getElementById('streakCount').textContent = streak;
+
+      updateCurrentStudyCard(todayTasks);
+
+      const snippetContainer = document.getElementById('dashboardTaskList');
+      if (todayTasks.length === 0) {
+        snippetContainer.innerHTML = `
+          <div class="text-center py-8 text-slate-400 font-mono">
+            <i class="fa-solid fa-terminal text-2xl mb-2 text-indigo-400 opacity-60"></i>
+            <p class="text-xs">NO_ACTIVE_TASKS_SCHEDULED</p>
+            <button onclick="openAddTaskModal()" class="mt-2 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:underline">+ Add First Task</button>
+          </div>
+        `;
+      } else {
+        snippetContainer.innerHTML = todayTasks.slice(0, 4).map(task => renderTaskRowHTML(task, true)).join('');
+      }
+
+      renderBadges(streak, completed, actualMinutes);
+    }
+
+    function formatMinsToHours(minutes) {
+      const hrs = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return `${hrs}h ${mins}m`;
+    }
+
+    function computeDailyStreak() {
+      let streak = 0;
+      const today = new Date();
+
+      for (let i = 0; i < 90; i++) {
+        const checkDate = new Date();
+        checkDate.setDate(today.getDate() - i);
+        const y = checkDate.getFullYear();
+        const m = String(checkDate.getMonth() + 1).padStart(2, '0');
+        const d = String(checkDate.getDate()).padStart(2, '0');
+        const dStr = `${y}-${m}-${d}`;
+
+        const dayTasks = state.tasks.filter(t => t.date === dStr);
+        if (dayTasks.length > 0) {
+          const comp = dayTasks.filter(t => t.status === 'Completed').length;
+          const rate = comp / dayTasks.length;
+          if (rate >= 0.5) {
+            streak++;
+          } else {
+            if (i === 0) continue;
+            break;
+          }
+        } else {
+          if (i === 0) continue;
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function updateCurrentStudyCard(todayTasks) {
+      const now = new Date();
+      const currentHours = now.getHours().toString().padStart(2, '0');
+      const currentMinutes = now.getMinutes().toString().padStart(2, '0');
+      const currentTimeStr = `${currentHours}:${currentMinutes}`;
+
+      let activeTask = todayTasks.find(t => t.status === 'Pending' && t.startTime <= currentTimeStr && t.endTime >= currentTimeStr);
+      if (!activeTask) {
+        activeTask = todayTasks.find(t => t.status === 'Pending' && t.startTime > currentTimeStr);
+      }
+      if (!activeTask) {
+        activeTask = todayTasks.find(t => t.status === 'Pending');
+      }
+
+      const titleEl = document.getElementById('currentTaskTitle');
+      const detailsEl = document.getElementById('currentTaskDetails');
+      const actionsEl = document.getElementById('currentTaskActions');
+      const quickBtn = document.getElementById('quickCompleteBtn');
+
+      if (activeTask) {
+        titleEl.textContent = `${activeTask.subject}: ${activeTask.topic}`;
+        detailsEl.textContent = `Scheduled: ${activeTask.startTime} - ${activeTask.endTime} • ${activeTask.type} • Priority: ${activeTask.priority}`;
+        actionsEl.classList.remove('hidden');
+        quickBtn.onclick = () => markTaskCompleted(activeTask.id);
+      } else {
+        const allCompleted = todayTasks.length > 0 && todayTasks.every(t => t.status === 'Completed');
+        if (allCompleted) {
+          titleEl.textContent = '🎉 All Planned Tasks Completed!';
+          detailsEl.textContent = 'Great consistency today! Proceed to end-of-day evaluation.';
+        } else {
+          titleEl.textContent = 'No active tasks pending';
+          detailsEl.textContent = 'Add your next revision or practice topic to keep momentum going.';
+        }
+        actionsEl.classList.add('hidden');
+      }
+    }
+
+    function renderBadges(streak, completedCount, actualMinutes) {
+      const container = document.getElementById('badgesContainer');
+      const badges = [
+        { label: '7-Day Consistency', icon: 'fa-solid fa-trophy', earned: streak >= 7, desc: 'Maintain 7-day study streak' },
+        { label: '50 Hours Mastered', icon: 'fa-solid fa-bolt', earned: (actualMinutes / 60) >= 50, desc: 'Accumulate 50+ study hours' },
+        { label: 'Tenacity Badge', icon: 'fa-solid fa-fire', earned: completedCount >= 5, desc: 'Complete 5 tasks in a single day' },
+        { label: 'Target Achiever', icon: 'fa-solid fa-bullseye', earned: streak >= 3, desc: 'Complete study goals 3 days in a row' }
+      ];
+
+      container.innerHTML = badges.map(b => `
+        <div class="flex items-center gap-3 p-2.5 rounded-2xl border transition-all ${b.earned ? 'bg-indigo-500/10 dark:bg-indigo-500/10 border-indigo-500/30 shadow-sm' : 'bg-slate-100/70 dark:bg-white/[0.02] border-slate-200/70 dark:border-white/5 opacity-60'}">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${b.earned ? 'bg-indigo-600 text-white shadow-glow-indigo' : 'bg-slate-200 dark:bg-white/10 text-slate-400'}">
+            <i class="${b.icon} text-xs"></i>
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="font-bold text-xs text-slate-900 dark:text-slate-100">${b.label}</p>
+            <p class="text-[10px] text-slate-500 font-mono truncate">${b.desc}</p>
+          </div>
+          ${b.earned ? '<span class="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20">UNLOCKED</span>' : '<span class="text-[10px] font-mono text-slate-400">LOCKED</span>'}
+        </div>
+      `).join('');
+    }
+
+    // TASK LIST RENDERING
+    function renderTaskList() {
+      const container = document.getElementById('tasksListMain');
+      const today = getTodayString();
+
+      let list = state.tasks.filter(t => t.date === today);
+
+      if (state.currentFilter !== 'all') {
+        const targetStatus = state.currentFilter === 'pending' ? 'Pending'
+          : state.currentFilter === 'completed' ? 'Completed'
+          : 'Missed';
+        list = list.filter(t => t.status === targetStatus);
+      }
+
+      list.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="p-12 text-center glass-panel rounded-3xl text-slate-400 font-mono">
+            <i class="fa-solid fa-clipboard-list text-3xl mb-3 opacity-40 text-indigo-400"></i>
+            <p class="text-sm font-bold text-slate-700 dark:text-slate-300">NO_TASKS_MATCHING_FILTER</p>
+            <p class="text-xs text-slate-500 mt-1">Add tasks for today or check another filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(task => renderTaskRowHTML(task, false)).join('');
+    }
+
+    function renderTaskRowHTML(task, compact = false) {
+      const typeClasses = {
+        'Study': 'badge-study',
+        'Revision': 'badge-revision',
+        'Practice': 'badge-practice',
+        'Mock Test': 'badge-mock'
+      }[task.type] || 'badge-study';
+
+      const isCompleted = task.status === 'Completed';
+      const isMissed = task.status === 'Missed';
+
+      const priorityBadge = task.priority === 'High' ? '<span class="text-[10px] font-mono text-rose-500 font-bold">● High</span>'
+        : task.priority === 'Medium' ? '<span class="text-[10px] font-mono text-amber-500 font-medium">● Med</span>'
+        : '<span class="text-[10px] font-mono text-emerald-500 font-medium">● Low</span>';
+
+      return `
+        <div class="p-4 rounded-2xl border transition-all duration-200 ${isCompleted ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/[0.06] border-emerald-500/30' : isMissed ? 'bg-rose-500/[0.04] dark:bg-rose-500/[0.06] border-rose-500/30' : 'glass-panel hover:border-indigo-500/40'} shadow-sm flex items-start gap-3.5">
+          
+          <button onclick="toggleTaskStatus('${task.id}')" aria-label="Toggle Complete Status" class="mt-0.5 w-6 h-6 rounded-lg border flex items-center justify-center transition flex-shrink-0 ${isCompleted ? 'bg-emerald-600 border-emerald-600 text-white shadow-glow-emerald' : 'border-slate-300 dark:border-white/20 hover:border-indigo-500 text-transparent'} active:scale-90">
+            <i class="fa-solid fa-check text-xs ${isCompleted ? 'opacity-100' : 'opacity-0'}"></i>
+          </button>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-1">
+              <span class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md ${typeClasses}">${task.type}</span>
+              <span class="text-xs font-semibold text-slate-800 dark:text-slate-200">${task.subject}</span>
+              ${priorityBadge}
+              ${task.rescheduledFrom ? '<span class="text-[9px] font-mono px-2 py-0.5 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-md border border-amber-500/20 font-semibold">Rescheduled</span>' : ''}
+              ${task.recurring && task.recurring !== 'none' ? '<span class="text-[10px] text-slate-400"><i class="fa-solid fa-repeat text-[9px]"></i></span>' : ''}
+            </div>
+
+            <h4 class="font-bold text-xs md:text-sm text-slate-900 dark:text-white ${isCompleted ? 'line-through text-slate-400 dark:text-slate-500' : ''}">${task.topic}</h4>
+
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-1.5">
+              <span><i class="fa-regular fa-clock mr-1 text-indigo-400"></i>${task.startTime || 'Flexible'} - ${task.endTime || 'Flexible'} (${task.duration}m)</span>
+              ${task.questionsTarget ? `<span><i class="fa-solid fa-bullseye mr-1 text-cyan-400"></i>Target: ${task.questionsTarget}</span>` : ''}
+              ${isCompleted && task.completionTime ? `<span class="text-emerald-600 dark:text-emerald-400 font-semibold">Finished: ${task.completionTime}</span>` : ''}
+              ${isMissed ? '<span class="text-rose-500 font-semibold">Missed</span>' : ''}
+            </div>
+
+            ${task.notes ? `<p class="text-[11px] text-slate-400 dark:text-slate-500 mt-1.5 italic bg-slate-50 dark:bg-white/[0.02] p-2 rounded-xl border border-slate-200/50 dark:border-white/5">${task.notes}</p>` : ''}
+          </div>
+
+          <div class="relative">
+            <button onclick="toggleTaskDropdown('${task.id}')" aria-label="Task Actions" class="w-8 h-8 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 flex items-center justify-center transition">
+              <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+            </button>
+
+            <div id="dropdown-${task.id}" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-[#0c121f] rounded-2xl shadow-glass-card border border-slate-200 dark:border-white/10 py-1.5 z-30 text-xs font-mono text-slate-700 dark:text-slate-200 backdrop-blur-xl">
+              <button onclick="openEditTaskModal('${task.id}')" class="w-full text-left px-3.5 py-2 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-2.5 transition">
+                <i class="fa-solid fa-pen-to-square text-slate-400"></i> Edit Task
+              </button>
+              <button onclick="openRescheduleModal('${task.id}')" class="w-full text-left px-3.5 py-2 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-2.5 transition text-indigo-600 dark:text-indigo-400">
+                <i class="fa-solid fa-calendar-plus"></i> Reschedule
+              </button>
+              <button onclick="toggleTaskStatus('${task.id}')" class="w-full text-left px-3.5 py-2 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-2.5 transition text-emerald-600 dark:text-emerald-400">
+                <i class="fa-solid fa-check"></i> ${isCompleted ? 'Mark Pending' : 'Mark Complete'}
+              </button>
+              <button onclick="duplicateTask('${task.id}')" class="w-full text-left px-3.5 py-2 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-2.5 transition">
+                <i class="fa-solid fa-copy text-slate-400"></i> Duplicate
+              </button>
+              <button onclick="markTaskAsMissed('${task.id}')" class="w-full text-left px-3.5 py-2 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-2.5 transition text-rose-500">
+                <i class="fa-solid fa-xmark"></i> Mark as Missed
+              </button>
+              <button onclick="viewTaskHistory('${task.id}')" class="w-full text-left px-3.5 py-2 hover:bg-slate-100 dark:hover:bg-white/5 flex items-center gap-2.5 transition">
+                <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> View History
+              </button>
+              <div class="border-t border-slate-100 dark:border-white/10 my-1"></div>
+              <button onclick="promptDeleteTask('${task.id}')" class="w-full text-left px-3.5 py-2 hover:bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center gap-2.5 transition">
+                <i class="fa-solid fa-trash-can"></i> Delete Task
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleTaskDropdown(taskId) {
+      document.querySelectorAll('[id^="dropdown-"]').forEach(el => {
+        if (el.id !== `dropdown-${taskId}`) el.classList.add('hidden');
+      });
+      const el = document.getElementById(`dropdown-${taskId}`);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.relative')) {
+        document.querySelectorAll('[id^="dropdown-"]').forEach(el => el.classList.add('hidden'));
+      }
+    });
+
+    function filterTasks(type) {
+      state.currentFilter = type;
+      document.querySelectorAll('.task-filter-pill').forEach(btn => {
+        const isActive = btn.dataset.filter === type;
+        if (isActive) {
+          btn.className = "task-filter-pill px-4 py-1.5 rounded-xl font-bold bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm transition";
+        } else {
+          btn.className = "task-filter-pill px-4 py-1.5 rounded-xl font-bold bg-slate-100 text-slate-600 dark:bg-white/5 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/10 transition";
+        }
+      });
+      renderTaskList();
+    }
+
+    // TASK STATUS MUTATIONS
+    function toggleTaskStatus(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      if (task.status === 'Completed') {
+        task.status = 'Pending';
+        task.completionTime = null;
+        task.actualDuration = 0;
+        addTaskHistoryRecord(task, `Marked as Pending`);
+        showToast(`Task reset to pending: ${task.topic}`, 'info');
+      } else {
+        task.status = 'Completed';
+        task.completionTime = timeStr;
+        task.actualDuration = task.duration || 60;
+        addTaskHistoryRecord(task, `Completed at ${timeStr}`);
+        showToast(`Task completed! +${task.duration || 60}m logged`, 'success');
+      }
+
+      saveState();
+      renderAllViews();
+    }
+
+    function markTaskCompleted(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      task.status = 'Completed';
+      task.completionTime = timeStr;
+      task.actualDuration = task.duration || 60;
+      addTaskHistoryRecord(task, `Completed at ${timeStr}`);
+      saveState();
+      renderAllViews();
+      showToast(`Directive completed: ${task.topic}`, 'success');
+    }
+
+    function markTaskAsMissed(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      task.status = 'Missed';
+      addTaskHistoryRecord(task, `Marked as Missed`);
+      saveState();
+      renderAllViews();
+      showToast(`Task marked as missed: ${task.topic}`, 'warning');
+    }
+
+    // TASK HISTORY AUDITING
+    function addTaskHistoryRecord(task, actionDescription) {
+      if (!task.history) task.history = [];
+      const now = new Date();
+      const stamp = `${now.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}, ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      task.history.push({
+        timestamp: stamp,
+        action: actionDescription
+      });
+    }
+
+    function viewTaskHistory(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const listContainer = document.getElementById('historyTimelineList');
+      const title = document.getElementById('historyModalTitle');
+      title.innerHTML = `<i class="fa-solid fa-list-ol text-indigo-400"></i> ${task.topic}`;
+
+      if (!task.history || task.history.length === 0) {
+        listContainer.innerHTML = '<p class="text-xs text-slate-400 font-mono">No previous audit logs recorded for this task.</p>';
+      } else {
+        listContainer.innerHTML = task.history.map(item => `
+          <div class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/50 dark:border-white/5">
+            <i class="fa-solid fa-circle-dot text-indigo-500 text-[10px] mt-1"></i>
+            <div>
+              <p class="font-semibold text-slate-800 dark:text-slate-200 text-xs">${item.action}</p>
+              <span class="text-[10px] text-slate-400 font-mono">${item.timestamp}</span>
+            </div>
+          </div>
+        `).reverse().join('');
+      }
+
+      document.getElementById('historyModal').classList.remove('hidden');
+    }
+
+    function closeHistoryModal() {
+      document.getElementById('historyModal').classList.add('hidden');
+    }
+
+    // CONFLICT DETECTION
+    function detectTimeConflict(date, startTime, endTime, excludeTaskId = null) {
+      if (!startTime || !endTime) return null;
+      return state.tasks.find(t => {
+        if (t.id === excludeTaskId) return false;
+        if (t.date !== date) return false;
+        if (t.status === 'Missed') return false;
+        return (startTime < t.endTime && endTime > t.startTime);
+      });
+    }
+
+    // ADD / EDIT TASK FORM
+    function openAddTaskModal() {
+      document.getElementById('taskModalTitle').textContent = 'Create New Task';
+      document.getElementById('taskFormId').value = '';
+      document.getElementById('taskTopic').value = '';
+      document.getElementById('taskNotes').value = '';
+      document.getElementById('taskQuestionsTarget').value = '';
+      document.getElementById('taskType').value = 'Study';
+      document.getElementById('taskPriority').value = 'Medium';
+      document.getElementById('taskDate').value = getTodayString();
+      document.getElementById('taskRecurring').value = 'none';
+      document.getElementById('recurringFieldContainer').classList.remove('hidden');
+
+      const now = new Date();
+      const startH = String(now.getHours()).padStart(2, '0');
+      const endH = String((now.getHours() + 2) % 24).padStart(2, '0');
+      document.getElementById('taskStartTime').value = `${startH}:00`;
+      document.getElementById('taskEndTime').value = `${endH}:00`;
+      document.getElementById('taskDuration').value = 120;
+
+      document.getElementById('modalConflictAlert').classList.add('hidden');
+      populateSubjectDropdowns();
+      document.getElementById('taskModal').classList.remove('hidden');
+    }
+
+    function openEditTaskModal(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      document.getElementById('taskModalTitle').textContent = 'Edit Task';
+      document.getElementById('taskFormId').value = task.id;
+      document.getElementById('taskSubject').value = task.subject;
+      document.getElementById('taskTopic').value = task.topic;
+      document.getElementById('taskType').value = task.type;
+      document.getElementById('taskPriority').value = task.priority || 'Medium';
+      document.getElementById('taskDate').value = task.date;
+      document.getElementById('taskStartTime').value = task.startTime;
+      document.getElementById('taskEndTime').value = task.endTime;
+      document.getElementById('taskDuration').value = task.duration;
+      document.getElementById('taskQuestionsTarget').value = task.questionsTarget || '';
+      document.getElementById('taskNotes').value = task.notes || '';
+      document.getElementById('recurringFieldContainer').classList.add('hidden');
+
+      document.getElementById('modalConflictAlert').classList.add('hidden');
+      document.getElementById('taskModal').classList.remove('hidden');
+    }
+
+    function closeTaskModal() {
+      document.getElementById('taskModal').classList.add('hidden');
+    }
+
+    function handleTaskFormSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('taskFormId').value;
+      const subject = document.getElementById('taskSubject').value;
+      const topic = document.getElementById('taskTopic').value.trim();
+      const type = document.getElementById('taskType').value;
+      const priority = document.getElementById('taskPriority').value;
+      const date = document.getElementById('taskDate').value;
+      const startTime = document.getElementById('taskStartTime').value;
+      const endTime = document.getElementById('taskEndTime').value;
+      const duration = parseInt(document.getElementById('taskDuration').value) || 60;
+      const questionsTarget = document.getElementById('taskQuestionsTarget').value;
+      const notes = document.getElementById('taskNotes').value.trim();
+      const recurring = document.getElementById('taskRecurring').value;
+
+      const conflict = detectTimeConflict(date, startTime, endTime, id || null);
+      if (conflict) {
+        const alertEl = document.getElementById('modalConflictAlert');
+        alertEl.textContent = `⚠️ Overlap Warning: Conflicts with "${conflict.subject} - ${conflict.topic}" (${conflict.startTime}-${conflict.endTime}).`;
+        alertEl.classList.remove('hidden');
+      }
+
+      if (id) {
+        const task = state.tasks.find(t => t.id === id);
+        if (task) {
+          const oldSchedule = `${task.date}, ${task.startTime}-${task.endTime}`;
+          task.subject = subject;
+          task.topic = topic;
+          task.type = type;
+          task.priority = priority;
+          task.date = date;
+          task.startTime = startTime;
+          task.endTime = endTime;
+          task.duration = duration;
+          task.questionsTarget = questionsTarget;
+          task.notes = notes;
+          addTaskHistoryRecord(task, `Edited details (Prior: ${oldSchedule})`);
+          showToast(`Task "${topic}" updated`, 'info');
+        }
+      } else {
+        const newTask = {
+          id: 'task_' + Date.now(),
+          subject,
+          topic,
+          type,
+          priority,
+          date,
+          startTime,
+          endTime,
+          duration,
+          questionsTarget,
+          notes,
+          recurring,
+          status: 'Pending',
+          completionTime: null,
+          actualDuration: 0,
+          history: []
+        };
+        addTaskHistoryRecord(newTask, `Created task for ${formatDateFriendly(date)}`);
+        state.tasks.push(newTask);
+
+        if (recurring && recurring !== 'none') {
+          generateRecurringTasks(newTask, recurring);
+        }
+        showToast(`Task created for ${formatDateFriendly(date)}`, 'success');
+      }
+
+      saveState();
+      closeTaskModal();
+      renderAllViews();
+    }
+
+    function generateRecurringTasks(baseTask, frequency) {
+      const datesToCreate = [];
+      const baseDate = new Date(baseTask.date);
+
+      if (frequency === 'daily') {
+        for (let i = 1; i <= 6; i++) {
+          const d = new Date(baseDate);
+          d.setDate(baseDate.getDate() + i);
+          datesToCreate.push(d);
+        }
+      } else if (frequency === 'weekdays') {
+        for (let i = 1; i <= 10 && datesToCreate.length < 5; i++) {
+          const d = new Date(baseDate);
+          d.setDate(baseDate.getDate() + i);
+          const day = d.getDay();
+          if (day !== 0 && day !== 6) datesToCreate.push(d);
+        }
+      } else if (frequency === 'weekly') {
+        for (let i = 1; i <= 3; i++) {
+          const d = new Date(baseDate);
+          d.setDate(baseDate.getDate() + (i * 7));
+          datesToCreate.push(d);
+        }
+      }
+
+      datesToCreate.forEach((d, idx) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dStr = `${y}-${m}-${day}`;
+
+        const recurringTask = {
+          ...baseTask,
+          id: 'task_' + (Date.now() + idx + 1),
+          date: dStr,
+          status: 'Pending',
+          completionTime: null,
+          actualDuration: 0,
+          history: [{ timestamp: 'Auto-created', action: `Recurring recurrence of ${baseTask.topic}` }]
+        };
+        state.tasks.push(recurringTask);
+      });
+    }
+
+    function duplicateTask(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      const clone = {
+        ...JSON.parse(JSON.stringify(task)),
+        id: 'task_' + Date.now(),
+        topic: `${task.topic} (Copy)`,
+        status: 'Pending',
+        completionTime: null,
+        actualDuration: 0,
+        history: [{ timestamp: 'Just now', action: `Duplicated from ${task.topic}` }]
+      };
+      state.tasks.push(clone);
+      saveState();
+      renderAllViews();
+      showToast(`Duplicated: ${clone.topic}`, 'info');
+    }
+
+    // RESCHEDULING SYSTEM
+    function openRescheduleModal(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      document.getElementById('rescheduleTaskId').value = task.id;
+      document.getElementById('rescheduleOriginalDisplay').textContent =
+        `${task.subject} — ${task.topic} (Originally: ${formatDateFriendly(task.date)}, ${task.startTime}–${task.endTime})`;
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`;
+
+      document.getElementById('rescheduleNewDate').value = tomStr;
+      document.getElementById('rescheduleNewStartTime').value = task.startTime || '09:00';
+      document.getElementById('rescheduleNewEndTime').value = task.endTime || '11:00';
+      document.getElementById('rescheduleReason').value = '';
+      document.getElementById('rescheduleConflictWarning').classList.add('hidden');
+
+      document.getElementById('rescheduleModal').classList.remove('hidden');
+    }
+
+    function closeRescheduleModal() {
+      document.getElementById('rescheduleModal').classList.add('hidden');
+    }
+
+    function applyQuickReschedule(type) {
+      const now = new Date();
+      const dateInput = document.getElementById('rescheduleNewDate');
+      const startInput = document.getElementById('rescheduleNewStartTime');
+      const endInput = document.getElementById('rescheduleNewEndTime');
+
+      if (type === 'later_today') {
+        dateInput.value = getTodayString();
+        const startH = (now.getHours() + 2) % 24;
+        startInput.value = `${String(startH).padStart(2, '0')}:00`;
+        endInput.value = `${String((startH + 2) % 24).padStart(2, '0')}:00`;
+      } else if (type === 'tomorrow_9am') {
+        const tom = new Date(); tom.setDate(tom.getDate() + 1);
+        dateInput.value = `${tom.getFullYear()}-${String(tom.getMonth() + 1).padStart(2, '0')}-${String(tom.getDate()).padStart(2, '0')}`;
+        startInput.value = '09:00';
+        endInput.value = '11:00';
+      } else if (type === 'tomorrow_7pm') {
+        const tom = new Date(); tom.setDate(tom.getDate() + 1);
+        dateInput.value = `${tom.getFullYear()}-${String(tom.getMonth() + 1).padStart(2, '0')}-${String(tom.getDate()).padStart(2, '0')}`;
+        startInput.value = '19:00';
+        endInput.value = '21:00';
+      } else if (type === 'weekend') {
+        const day = now.getDay();
+        const daysToSat = (6 - day + 7) % 7 || 7;
+        const sat = new Date(); sat.setDate(now.getDate() + daysToSat);
+        dateInput.value = `${sat.getFullYear()}-${String(sat.getMonth() + 1).padStart(2, '0')}-${String(sat.getDate()).padStart(2, '0')}`;
+        startInput.value = '10:00';
+        endInput.value = '12:00';
+      }
+    }
+
+    function submitReschedule(force = false) {
+      const taskId = document.getElementById('rescheduleTaskId').value;
+      const newDate = document.getElementById('rescheduleNewDate').value;
+      const newStart = document.getElementById('rescheduleNewStartTime').value;
+      const newEnd = document.getElementById('rescheduleNewEndTime').value;
+      const reason = document.getElementById('rescheduleReason').value.trim();
+
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      if (!force) {
+        const conflict = detectTimeConflict(newDate, newStart, newEnd, taskId);
+        if (conflict) {
+          const warnEl = document.getElementById('rescheduleConflictWarning');
+          warnEl.textContent = `⚠️ Warning: Overlaps with "${conflict.subject} - ${conflict.topic}" (${conflict.startTime} - ${conflict.endTime}).`;
+          warnEl.classList.remove('hidden');
+        }
+      }
+
+      const prevSchedule = `${formatDateFriendly(task.date)} ${task.startTime}-${task.endTime}`;
+      task.rescheduledFrom = prevSchedule;
+      task.date = newDate;
+      task.startTime = newStart;
+      task.endTime = newEnd;
+      task.status = 'Pending';
+
+      addTaskHistoryRecord(task, `Rescheduled from ${prevSchedule} to ${formatDateFriendly(newDate)} ${newStart}-${newEnd}${reason ? ' (' + reason + ')' : ''}`);
+
+      saveState();
+      closeRescheduleModal();
+      renderAllViews();
+      showToast(`Task rescheduled to ${formatDateFriendly(newDate)}`, 'info');
+    }
+
+    // MISSED TASK RESOLUTION
+    function openMissedModal(taskId) {
+      state.taskPendingActionId = taskId;
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      document.getElementById('missedModalTaskInfo').textContent =
+        `Task: "${task.topic}" scheduled for ${task.startTime} - ${task.endTime} was not completed on time.`;
+      document.getElementById('missedActionModal').classList.remove('hidden');
+    }
+
+    function handleMissedResolution(choice) {
+      const taskId = state.taskPendingActionId;
+      document.getElementById('missedActionModal').classList.add('hidden');
+      if (!taskId) return;
+
+      if (choice === 'complete') {
+        markTaskCompleted(taskId);
+      } else if (choice === 'reschedule') {
+        openRescheduleModal(taskId);
+      } else if (choice === 'missed') {
+        markTaskAsMissed(taskId);
+      }
+    }
+
+    // DELETE TASK
+    function promptDeleteTask(taskId) {
+      state.taskToDeleteId = taskId;
+      document.getElementById('deleteConfirmModal').classList.remove('hidden');
+      document.getElementById('confirmDeleteBtn').onclick = () => {
+        state.tasks = state.tasks.filter(t => t.id !== state.taskToDeleteId);
+        saveState();
+        closeDeleteModal();
+        renderAllViews();
+        showToast('Task permanently purged', 'error');
+      };
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteConfirmModal').classList.add('hidden');
+      state.taskToDeleteId = null;
+    }
+
+    // CALENDAR VIEW
+    function changeCalMonth(offset) {
+      state.calViewMonth += offset;
+      if (state.calViewMonth < 0) {
+        state.calViewMonth = 11;
+        state.calViewYear -= 1;
+      } else if (state.calViewMonth > 11) {
+        state.calViewMonth = 0;
+        state.calViewYear += 1;
+      }
+      renderCalendar();
+    }
+
+    function renderCalendar() {
+      const grid = document.getElementById('calendarGrid');
+      const title = document.getElementById('calMonthTitle');
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      title.textContent = `${monthNames[state.calViewMonth]} ${state.calViewYear}`;
+
+      const firstDay = new Date(state.calViewYear, state.calViewMonth, 1).getDay();
+      const daysInMonth = new Date(state.calViewYear, state.calViewMonth + 1, 0).getDate();
+
+      let html = '';
+      for (let i = 0; i < firstDay; i++) {
+        html += `<div class="h-16 md:h-20 bg-slate-100/40 dark:bg-white/[0.01] rounded-2xl border border-transparent"></div>`;
+      }
+
+      const todayStr = getTodayString();
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const mStr = String(state.calViewMonth + 1).padStart(2, '0');
+        const dStr = String(day).padStart(2, '0');
+        const dateKey = `${state.calViewYear}-${mStr}-${dStr}`;
+
+        const dayTasks = state.tasks.filter(t => t.date === dateKey);
+        const total = dayTasks.length;
+        const completed = dayTasks.filter(t => t.status === 'Completed').length;
+
+        let statusColor = 'border-slate-200/80 dark:border-white/[0.08] bg-white dark:bg-[#0c121f]/70';
+        let badgeColor = 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300';
+        let statusDot = '';
+
+        if (total > 0) {
+          const compRate = completed / total;
+          if (compRate >= 0.75) {
+            statusDot = '<span class="w-2 h-2 rounded-full bg-emerald-400 shadow-glow-emerald inline-block"></span>';
+            badgeColor = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30';
+          } else if (compRate >= 0.4) {
+            statusDot = '<span class="w-2 h-2 rounded-full bg-amber-400 shadow-glow-amber inline-block"></span>';
+            badgeColor = 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30';
+          } else {
+            statusDot = '<span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>';
+            badgeColor = 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/30';
+          }
+        }
+
+        const isToday = dateKey === todayStr;
+
+        html += `
+          <div onclick="showCalendarDayInfo('${dateKey}')" class="h-16 md:h-20 p-2 rounded-2xl border ${statusColor} ${isToday ? 'ring-2 ring-indigo-500 shadow-glow-indigo font-bold' : ''} cursor-pointer hover:border-indigo-400 transition-all flex flex-col justify-between group active:scale-95">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono ${isToday ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-600 dark:text-slate-300'}">${day}</span>
+              ${statusDot}
+            </div>
+            ${total > 0 ? `
+              <div class="text-[10px] font-mono px-1 py-0.5 rounded-lg ${badgeColor} text-center font-bold">
+                ${completed}/${total}
+              </div>
+            ` : '<div class="text-[9px] font-mono text-slate-400 text-center">-</div>'}
+          </div>
+        `;
+      }
+
+      grid.innerHTML = html;
+    }
+
+    function showCalendarDayInfo(dateKey) {
+      const container = document.getElementById('calendarDayDetails');
+      const header = document.getElementById('calSelectedDateHeader');
+      const body = document.getElementById('calSelectedDateBody');
+      const tasks = state.tasks.filter(t => t.date === dateKey);
+
+      header.textContent = `Schedule for ${formatDateFriendly(dateKey)}`;
+      if (tasks.length === 0) {
+        body.innerHTML = '<p class="text-slate-400 font-mono">No study tasks were scheduled on this date.</p>';
+      } else {
+        body.innerHTML = tasks.map(t => `
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200/60 dark:border-white/5 flex items-center justify-between font-mono">
+            <div>
+              <p class="font-bold text-slate-800 dark:text-slate-200">${t.subject}: ${t.topic}</p>
+              <p class="text-[10px] text-slate-400">${t.startTime} - ${t.endTime} • ${t.type}</p>
+            </div>
+            <span class="text-xs font-bold px-2 py-0.5 rounded-md ${t.status === 'Completed' ? 'text-emerald-400 bg-emerald-500/10' : t.status === 'Missed' ? 'text-rose-400 bg-rose-500/10' : 'text-amber-400 bg-amber-500/10'}">${t.status}</span>
+          </div>
+        `).join('');
+      }
+      container.classList.remove('hidden');
+    }
+
+    // PROGRESS & CHARTS VIEW
+    function renderProgressAndCharts() {
+      const last7Days = [];
+      const now = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(now.getDate() - i);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        last7Days.push({
+          dateStr: `${y}-${m}-${day}`,
+          dayName: d.toLocaleDateString('en-IN', { weekday: 'short' })
+        });
+      }
+
+      let weeklyMinutes = 0;
+      let weeklyTasksCompleted = 0;
+      let weeklyTasksMissed = 0;
+      let weeklyTasksTotal = 0;
+      let dayMinutesMap = {};
+
+      last7Days.forEach(dayObj => {
+        const dayTasks = state.tasks.filter(t => t.date === dayObj.dateStr);
+        let dayMin = 0;
+        dayTasks.forEach(t => {
+          weeklyTasksTotal++;
+          if (t.status === 'Completed') {
+            weeklyTasksCompleted++;
+            const m = Number(t.actualDuration || t.duration || 0);
+            weeklyMinutes += m;
+            dayMin += m;
+          } else if (t.status === 'Missed') {
+            weeklyTasksMissed++;
+          }
+        });
+        dayMinutesMap[dayObj.dayName] = dayMin;
+      });
+
+      const weeklyHours = (weeklyMinutes / 60).toFixed(1);
+      const avgDailyHours = (weeklyMinutes / (60 * 7)).toFixed(1);
+      const weeklyPct = weeklyTasksTotal === 0 ? 0 : Math.round((weeklyTasksCompleted / weeklyTasksTotal) * 100);
+
+      document.getElementById('weeklyTotalHours').textContent = `${weeklyHours} hrs`;
+      document.getElementById('weeklyAvgDailyHours').textContent = `${avgDailyHours} hrs`;
+      document.getElementById('weeklyCompletionPct').textContent = `${weeklyPct}%`;
+      document.getElementById('weeklyCompletedTasksCount').textContent = weeklyTasksCompleted;
+      document.getElementById('weeklyMissedTasksCount').textContent = weeklyTasksMissed;
+
+      let bestDay = '-';
+      let maxMin = -1;
+      let weakDay = '-';
+      let minMin = 999999;
+      Object.keys(dayMinutesMap).forEach(d => {
+        if (dayMinutesMap[d] > maxMin) {
+          maxMin = dayMinutesMap[d];
+          bestDay = d;
+        }
+        if (dayMinutesMap[d] < minMin) {
+          minMin = dayMinutesMap[d];
+          weakDay = d;
+        }
+      });
+      document.getElementById('weeklyBestDay').textContent = bestDay;
+      document.getElementById('weeklyWeakDay').textContent = weakDay;
+
+      renderSubjectBreakdown();
+      initOrUpdateCharts(last7Days);
+    }
+
+    function renderSubjectBreakdown() {
+      const grid = document.getElementById('subjectBreakdownGrid');
+      const subjectStats = {};
+
+      state.subjects.forEach(s => {
+        subjectStats[s] = { total: 0, completed: 0, minutes: 0 };
+      });
+
+      state.tasks.forEach(t => {
+        if (!subjectStats[t.subject]) {
+          subjectStats[t.subject] = { total: 0, completed: 0, minutes: 0 };
+        }
+        subjectStats[t.subject].total++;
+        if (t.status === 'Completed') {
+          subjectStats[t.subject].completed++;
+          subjectStats[t.subject].minutes += Number(t.actualDuration || t.duration || 0);
+        }
+      });
+
+      grid.innerHTML = Object.keys(subjectStats).map(subj => {
+        const stat = subjectStats[subj];
+        const pct = stat.total === 0 ? 0 : Math.round((stat.completed / stat.total) * 100);
+        const hrs = (stat.minutes / 60).toFixed(1);
+        return `
+          <div class="p-4 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] shadow-sm flex flex-col justify-between hover:border-indigo-500/40 transition">
+            <div>
+              <div class="flex items-center justify-between">
+                <h4 class="font-bold text-xs text-slate-800 dark:text-slate-200 truncate font-mono">${subj}</h4>
+                <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">${hrs}h</span>
+              </div>
+              <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 mt-2">
+                <span>Tasks: ${stat.completed}/${stat.total}</span>
+                <span>${pct}%</span>
+              </div>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-white/10 h-1.5 rounded-full mt-3 overflow-hidden">
+              <div class="bg-gradient-to-r from-indigo-500 to-cyan-400 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function initOrUpdateCharts(last7Days) {
+      const isDark = document.documentElement.classList.contains('dark');
+      const textColor = isDark ? '#94a3b8' : '#64748b';
+      const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(226, 232, 240, 0.8)';
+
+      const barLabels = last7Days.map(d => d.dayName);
+      const barData = last7Days.map(d => {
+        const dayTasks = state.tasks.filter(t => t.date === d.dateStr && t.status === 'Completed');
+        const mins = dayTasks.reduce((acc, t) => acc + Number(t.actualDuration || t.duration || 0), 0);
+        return (mins / 60).toFixed(1);
+      });
+
+      const ctxHours = document.getElementById('hoursChart').getContext('2d');
+      if (hoursChartInstance) hoursChartInstance.destroy();
+
+      hoursChartInstance = new Chart(ctxHours, {
+        type: 'bar',
+        data: {
+          labels: barLabels,
+          datasets: [{
+            label: 'Study Hours',
+            data: barData,
+            backgroundColor: '#6366f1',
+            borderRadius: 8,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#0c121f',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              titleFont: { family: 'JetBrains Mono' },
+              bodyFont: { family: 'JetBrains Mono' },
+              padding: 10,
+              cornerRadius: 10
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 10 } },
+              grid: { color: gridColor }
+            },
+            x: {
+              ticks: { color: textColor, font: { family: 'JetBrains Mono', size: 10 } },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+
+      const subjectHours = {};
+      state.tasks.forEach(t => {
+        if (t.status === 'Completed') {
+          const m = Number(t.actualDuration || t.duration || 0);
+          subjectHours[t.subject] = (subjectHours[t.subject] || 0) + m;
+        }
+      });
+
+      const pieLabels = Object.keys(subjectHours).length > 0 ? Object.keys(subjectHours) : ['Indian Polity', 'Indian History'];
+      const pieData = Object.keys(subjectHours).length > 0 ? Object.values(subjectHours).map(m => (m / 60).toFixed(1)) : [5, 4];
+
+      const ctxPie = document.getElementById('subjectPieChart').getContext('2d');
+      if (subjectPieChartInstance) subjectPieChartInstance.destroy();
+
+      subjectPieChartInstance = new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+          labels: pieLabels,
+          datasets: [{
+            data: pieData,
+            backgroundColor: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e'],
+            borderWidth: 2,
+            borderColor: isDark ? '#0c121f' : '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: textColor, boxWidth: 8, font: { family: 'JetBrains Mono', size: 10 } }
+            },
+            tooltip: {
+              backgroundColor: '#0c121f',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderWidth: 1,
+              titleFont: { family: 'JetBrains Mono' },
+              bodyFont: { family: 'JetBrains Mono' }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    function refreshCharts() {
+      if (state.activeTab === 'progress') {
+        renderProgressAndCharts();
+      }
+    }
+
+    // DAILY EVALUATION TAB
+    function renderEvaluationTab() {
+      const today = getTodayString();
+      const todayTasks = state.tasks.filter(t => t.date === today);
+
+      const plannedCount = todayTasks.length;
+      const completedCount = todayTasks.filter(t => t.status === 'Completed').length;
+      const rescheduledCount = todayTasks.filter(t => t.rescheduledFrom).length;
+      const missedCount = todayTasks.filter(t => t.status === 'Missed').length;
+
+      document.getElementById('evalPlannedCount').textContent = `${plannedCount} tasks`;
+      document.getElementById('evalCompletedCount').textContent = completedCount;
+      document.getElementById('evalRescheduledCount').textContent = rescheduledCount;
+      document.getElementById('evalMissedCount').textContent = missedCount;
+
+      let actualMins = 0;
+      let completedTopics = [];
+      todayTasks.forEach(t => {
+        if (t.status === 'Completed') {
+          actualMins += Number(t.actualDuration || t.duration || 0);
+          completedTopics.push(`${t.subject} (${t.topic})`);
+        }
+      });
+
+      const existing = state.evaluations[today];
+      if (existing) {
+        document.getElementById('evalHoursInput').value = existing.hours;
+        document.getElementById('evalTopicsCompletedInput').value = existing.topicsCompleted;
+        document.getElementById('evalDifficultTopicsInput').value = existing.difficultTopics || '';
+        document.getElementById('evalQuestionsPracticedInput').value = existing.questionsPracticed || '';
+        document.getElementById('evalQuestionsCorrectInput').value = existing.questionsCorrect || '';
+        document.getElementById('evalImprovementInput').value = existing.improvementTomorrow || '';
+      } else {
+        document.getElementById('evalHoursInput').value = (actualMins / 60).toFixed(1);
+        document.getElementById('evalTopicsCompletedInput').value = completedTopics.join(', ');
+      }
+
+      renderEvaluationHistory();
+    }
+
+    function saveDailySelfEval(e) {
+      e.preventDefault();
+      const today = getTodayString();
+      const hours = parseFloat(document.getElementById('evalHoursInput').value) || 0;
+      const topicsCompleted = document.getElementById('evalTopicsCompletedInput').value.trim();
+      const difficultTopics = document.getElementById('evalDifficultTopicsInput').value.trim();
+      const questionsPracticed = parseInt(document.getElementById('evalQuestionsPracticedInput').value) || 0;
+      const questionsCorrect = parseInt(document.getElementById('evalQuestionsCorrectInput').value) || 0;
+      const improvementTomorrow = document.getElementById('evalImprovementInput').value.trim();
+
+      state.evaluations[today] = {
+        date: today,
+        hours,
+        topicsCompleted,
+        difficultTopics,
+        questionsPracticed,
+        questionsCorrect,
+        improvementTomorrow,
+        accuracy: questionsPracticed > 0 ? Math.round((questionsCorrect / questionsPracticed) * 100) : null
+      };
+
+      saveState();
+      renderEvaluationHistory();
+      renderDashboard();
+      showToast('Daily review logged and saved!', 'success');
+    }
+
+    function renderEvaluationHistory() {
+      const container = document.getElementById('evalHistoryContainer');
+      const dates = Object.keys(state.evaluations).sort().reverse();
+
+      if (dates.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-400 font-mono">No evaluation logs recorded yet. Fill out the form above at the end of each day.</p>';
+        return;
+      }
+
+      container.innerHTML = dates.map(dateKey => {
+        const item = state.evaluations[dateKey];
+        return `
+          <div class="p-4 rounded-2xl border border-slate-200/80 dark:border-white/[0.08] bg-slate-50/50 dark:bg-white/[0.02] text-xs space-y-2.5">
+            <div class="flex items-center justify-between border-b border-slate-200/70 dark:border-white/5 pb-2">
+              <span class="font-mono font-bold text-slate-900 dark:text-white text-sm">${formatDateFriendly(item.date)}</span>
+              <span class="px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">${item.hours} STUDY HOURS</span>
+            </div>
+            <p><strong class="text-slate-700 dark:text-slate-300 font-mono text-xs">Topics:</strong> <span class="text-slate-600 dark:text-slate-300">${item.topicsCompleted}</span></p>
+            ${item.difficultTopics ? `<p><strong class="text-amber-500 font-mono text-xs">Revision Need:</strong> <span class="text-slate-600 dark:text-slate-300">${item.difficultTopics}</span></p>` : ''}
+            ${item.questionsPracticed > 0 ? `
+              <p><strong class="text-emerald-500 font-mono text-xs">Practice Accuracy:</strong> <span class="font-mono text-slate-800 dark:text-slate-200">${item.questionsCorrect} / ${item.questionsPracticed} correct (${item.accuracy}%)</span></p>
+            ` : ''}
+            ${item.improvementTomorrow ? `<p class="italic text-slate-400 bg-slate-100/60 dark:bg-white/[0.02] p-2 rounded-xl">"Tomorrow I will: ${item.improvementTomorrow}"</p>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // BACKUP & RESTORE DATA
+    function exportDataJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `appsc_tracker_backup_${getTodayString()}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('JSON backup exported', 'success');
+    }
+
+    function importDataJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (parsed.tasks && parsed.subjects) {
+            state = parsed;
+            saveState();
+            populateSubjectDropdowns();
+            renderAllViews();
+            showToast('Backup restored successfully!', 'success');
+          }
+        } catch (err) {
+          console.error('Error parsing JSON backup file.', err);
+          showToast('Failed to parse backup file', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // SAMPLE SEED DATA
+    function seedSampleTasks() {
+      const today = getTodayString();
+      state.tasks = [
+        {
+          id: 'sample_1',
+          subject: 'Indian Polity',
+          topic: 'Fundamental Rights Articles 14 to 22',
+          type: 'Study',
+          priority: 'High',
+          date: today,
+          startTime: '08:00',
+          endTime: '10:00',
+          duration: 120,
+          questionsTarget: 25,
+          notes: 'Focus on reasonable restrictions and landmark judgments',
+          recurring: 'none',
+          status: 'Completed',
+          completionTime: '09:55',
+          actualDuration: 120,
+          history: [{ timestamp: '08:00', action: 'Created task' }, { timestamp: '09:55', action: 'Completed task' }]
+        },
+        {
+          id: 'sample_2',
+          subject: 'Indian History',
+          topic: 'Vedic Age & Early State Formations',
+          type: 'Revision',
+          priority: 'Medium',
+          date: today,
+          startTime: '10:30',
+          endTime: '12:00',
+          duration: 90,
+          questionsTarget: 30,
+          notes: 'NCERT summary revision',
+          recurring: 'none',
+          status: 'Pending',
+          completionTime: null,
+          actualDuration: 0,
+          history: [{ timestamp: '08:00', action: 'Created task' }]
+        },
+        {
+          id: 'sample_3',
+          subject: 'Reasoning',
+          topic: 'Number Series & Coding-Decoding',
+          type: 'Practice',
+          priority: 'Medium',
+          date: today,
+          startTime: '14:00',
+          endTime: '15:15',
+          duration: 75,
+          questionsTarget: 50,
+          notes: '50 PYQs from APPSC & SSC',
+          recurring: 'none',
+          status: 'Pending',
+          completionTime: null,
+          actualDuration: 0,
+          history: [{ timestamp: '08:00', action: 'Created task' }]
+        }
+      ];
+      saveState();
+    }
+
+    function resetAppDemoData() {
+      seedSampleTasks();
+      renderAllViews();
+      showToast('Sample APPSC schedule loaded', 'info');
+    }
+
+    // RENDER ALL VIEWS SYNC
+    function renderAllViews() {
+      renderDashboard();
+      renderTaskList();
+      renderCalendar();
+      if (state.activeTab === 'progress') renderProgressAndCharts();
+      if (state.activeTab === 'evaluation') renderEvaluationTab();
+      if (state.activeTab === 'settings') renderSettingsTab();
+    }
+  </script>
+</body>
+</html>
